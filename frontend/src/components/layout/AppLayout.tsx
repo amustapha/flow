@@ -30,7 +30,7 @@ export function AppLayout({ children, sidebar }: AppLayoutProps) {
       {/* Sidebar */}
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transition-transform duration-300 ease-in-out lg:translate-x-0 lg:z-30',
+          'fixed inset-y-0 left-0 z-50 w-80 bg-white shadow-lg transition-transform duration-300 ease-in-out lg:translate-x-0 lg:z-30',
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
@@ -55,7 +55,7 @@ export function AppLayout({ children, sidebar }: AppLayoutProps) {
       </aside>
 
       {/* Main content area */}
-      <div className="lg:pl-64">
+      <div className="lg:pl-80">
         {/* Top navigation bar for mobile */}
         <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-gray-200 bg-white px-4 shadow-sm lg:hidden">
           <Button
