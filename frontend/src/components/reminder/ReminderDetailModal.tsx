@@ -1,8 +1,7 @@
 'use client';
 
-import { Modal } from '@/components/ui';
+import { Modal, Button } from '@/components/ui';
 import { Reminder } from '@/types';
-import { Button } from '@/components/ui';
 
 export interface ReminderDetailModalProps {
   isOpen: boolean;
