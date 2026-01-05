@@ -2,7 +2,7 @@
 import re
 from datetime import datetime, timezone
 from typing import Optional
-from pydantic import field_validator
+from pydantic import Field, field_validator, ConfigDict
 import pytz
 from app.schemas.base import BaseSchema, IDMixin, TimestampMixin, ReminderStatus
 
@@ -10,11 +10,11 @@ from app.schemas.base import BaseSchema, IDMixin, TimestampMixin, ReminderStatus
 class ReminderBase(BaseSchema):
     """Base reminder schema with common fields."""
 
-    title: str
-    message: str
-    phone_number: str
-    scheduled_time: datetime
-    timezone: str
+    title: str = Field(..., examples=["Doctor Appointment"])
+    message: str = Field(..., examples=["Don't forget your annual checkup with Dr. Smith"])
+    phone_number: str = Field(..., examples=["+14155552671"])
+    scheduled_time: datetime = Field(..., examples=["2026-01-10T14:30:00Z"])
+    timezone: str = Field(..., examples=["America/Los_Angeles"])
 
     @field_validator("phone_number")
     @classmethod
@@ -52,12 +52,12 @@ class ReminderCreate(ReminderBase):
 class ReminderUpdate(BaseSchema):
     """Schema for updating a reminder (all fields optional)."""
 
-    title: Optional[str] = None
-    message: Optional[str] = None
-    phone_number: Optional[str] = None
-    scheduled_time: Optional[datetime] = None
-    timezone: Optional[str] = None
-    status: Optional[ReminderStatus] = None
+    title: Optional[str] = Field(None, examples=["Doctor Appointment - Rescheduled"])
+    message: Optional[str] = Field(None, examples=["Your appointment has been moved to next week"])
+    phone_number: Optional[str] = Field(None, examples=["+14155552671"])
+    scheduled_time: Optional[datetime] = Field(None, examples=["2026-01-17T14:30:00Z"])
+    timezone: Optional[str] = Field(None, examples=["America/Los_Angeles"])
+    status: Optional[ReminderStatus] = Field(None, examples=["completed"])
 
     @field_validator("phone_number")
     @classmethod
