@@ -3,34 +3,12 @@
 import { cn } from '@/lib/utils';
 
 export interface ReminderCardProps {
-  /**
-   * Reminder title
-   */
   title: string;
-  /**
-   * Scheduled time (Date object)
-   */
   time: Date;
-  /**
-   * Optional color for the reminder
-   */
   color?: 'purple' | 'blue' | 'green' | 'orange' | 'red';
-  /**
-   * Click handler to open reminder details
-   */
   onClick?: () => void;
-  /**
-   * Number of overlapping reminders at this time (for horizontal stacking)
-   */
   overlapIndex?: number;
-  /**
-   * Total number of overlapping reminders
-   */
   totalOverlaps?: number;
-  /**
-   * Day index for week view (0-6, Sun-Sat). If provided, card will be positioned in that day's column
-   */
-  dayIndex?: number;
 }
 
 export function ReminderCard({
@@ -40,7 +18,6 @@ export function ReminderCard({
   onClick,
   overlapIndex = 0,
   totalOverlaps = 1,
-  dayIndex,
 }: ReminderCardProps) {
   const colorClasses = {
     purple: 'bg-purple-100 border-purple-400 text-purple-900 hover:bg-purple-200',
@@ -50,13 +27,10 @@ export function ReminderCard({
     red: 'bg-red-100 border-red-400 text-red-900 hover:bg-red-200',
   };
 
-  // Calculate position based on time
   const getPosition = () => {
     const hours = time.getHours();
     const minutes = time.getMinutes();
     const totalMinutes = hours * 60 + minutes;
-
-    // 60px per hour, calculate percentage
     const topPercentage = (totalMinutes / (24 * 60)) * 100;
 
     return {
@@ -64,29 +38,7 @@ export function ReminderCard({
     };
   };
 
-  // Calculate width and left offset for overlapping reminders
   const getOverlapStyle = () => {
-    // Week view positioning
-    if (dayIndex !== undefined) {
-      const dayWidth = 100 / 7; // 7 days in a week (percentage of total width)
-      const dayLeft = dayWidth * dayIndex; // Start position of this day column
-
-      // Calculate card width within the day, accounting for overlaps
-      // Leave small margin to prevent touching day borders
-      const usableWidth = dayWidth * 0.98; // Use 98% to add padding
-      const cardWidth = usableWidth / totalOverlaps;
-
-      // Position within the day column, adding small offset for left margin
-      const marginOffset = dayWidth * 0.01; // 1% left margin
-      const cardLeft = dayLeft + marginOffset + (cardWidth * overlapIndex);
-
-      return {
-        width: `${cardWidth}%`,
-        left: `${cardLeft}%`,
-      };
-    }
-
-    // Day view positioning
     if (totalOverlaps === 1) {
       return {
         width: '100%',
@@ -119,14 +71,13 @@ export function ReminderCard({
   return (
     <div
       className={cn(
-        'absolute cursor-pointer rounded-lg border-l-4 p-2 shadow-sm transition-all',
+        'absolute h-[60px] cursor-pointer rounded-lg border-l-4 p-2 shadow-sm transition-all',
         colorClasses[color],
         onClick && 'hover:shadow-md'
       )}
       style={{
         ...position,
         ...overlapStyle,
-        height: '60px', // Fixed height for all reminders
       }}
       onClick={onClick}
     >

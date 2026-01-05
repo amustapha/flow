@@ -4,29 +4,21 @@ import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 
 export interface DayViewGridProps {
-  /**
-   * Current date to display
-   */
   date: Date;
-  /**
-   * Optional children (reminder cards)
-   */
   children?: React.ReactNode;
 }
 
 export function DayViewGrid({ date, children }: DayViewGridProps) {
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  // Update current time every minute
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(new Date());
-    }, 60000); // Update every minute
+    }, 60000);
 
     return () => clearInterval(interval);
   }, []);
 
-  // Generate time slots (24 hours)
   const hours = Array.from({ length: 24 }, (_, i) => i);
 
   const formatHour = (hour: number) => {
@@ -36,7 +28,6 @@ export function DayViewGrid({ date, children }: DayViewGridProps) {
     return `${hour - 12} PM`;
   };
 
-  // Calculate current time indicator position
   const getCurrentTimePosition = () => {
     if (!isToday()) return null;
 
@@ -62,10 +53,9 @@ export function DayViewGrid({ date, children }: DayViewGridProps) {
   return (
     <div className="relative flex-1 overflow-y-auto bg-white">
       <div className="relative min-h-[1440px]">
-        {/* Time labels */}
         <div className="absolute left-0 top-0 w-20 border-r border-gray-200">
           {hours.map((hour) => (
-            <div key={hour} className="h-[60px] border-b border-gray-100">
+            <div key={hour} className="h-15 border-b border-gray-100">
               <span className="block pr-2 pt-1 text-right text-xs text-gray-500">
                 {formatHour(hour)}
               </span>
@@ -73,17 +63,14 @@ export function DayViewGrid({ date, children }: DayViewGridProps) {
           ))}
         </div>
 
-        {/* Day column */}
         <div className="ml-20">
-          {/* Grid lines */}
           {hours.map((hour) => (
             <div
               key={hour}
-              className="h-[60px] border-b border-gray-100"
+              className="h-15 border-b border-gray-100"
             />
           ))}
 
-          {/* Current time indicator */}
           {currentTimePosition !== null && (
             <div
               className="absolute left-20 right-0 z-10 flex items-center"
@@ -94,7 +81,6 @@ export function DayViewGrid({ date, children }: DayViewGridProps) {
             </div>
           )}
 
-          {/* Reminder cards container */}
           <div className="absolute left-20 right-0 top-0 bottom-0">
             {children}
           </div>

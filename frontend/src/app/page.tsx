@@ -4,17 +4,13 @@ import { useState } from 'react';
 import { AppLayout, Sidebar } from '@/components';
 import {
   CalendarHeader,
-  ViewSelector,
   DateNavigation,
   DayViewGrid,
-  WeekViewGrid,
   ReminderCard,
-  CalendarView,
 } from '@/components/calendar';
 
 export default function Home() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [activeView, setActiveView] = useState<CalendarView>('day');
 
   const monthNames = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -30,34 +26,21 @@ export default function Home() {
   };
 
   const handlePrevious = () => {
-    if (activeView === 'day') {
-      const newDate = new Date(currentDate);
-      newDate.setDate(currentDate.getDate() - 1);
-      setCurrentDate(newDate);
-    } else {
-      const newDate = new Date(currentDate);
-      newDate.setDate(currentDate.getDate() - 7);
-      setCurrentDate(newDate);
-    }
+    const newDate = new Date(currentDate);
+    newDate.setDate(currentDate.getDate() - 1);
+    setCurrentDate(newDate);
   };
 
   const handleNext = () => {
-    if (activeView === 'day') {
-      const newDate = new Date(currentDate);
-      newDate.setDate(currentDate.getDate() + 1);
-      setCurrentDate(newDate);
-    } else {
-      const newDate = new Date(currentDate);
-      newDate.setDate(currentDate.getDate() + 7);
-      setCurrentDate(newDate);
-    }
+    const newDate = new Date(currentDate);
+    newDate.setDate(currentDate.getDate() + 1);
+    setCurrentDate(newDate);
   };
 
   const handleToday = () => {
     setCurrentDate(new Date());
   };
 
-  // Sample reminders for testing
   const sampleReminders = [
     {
       id: 1,
@@ -82,7 +65,6 @@ export default function Home() {
   return (
     <AppLayout sidebar={<Sidebar />}>
       <div className="flex h-full flex-col">
-        {/* Calendar Header */}
         <CalendarHeader
           month={monthNames[currentDate.getMonth()]}
           year={currentDate.getFullYear()}
@@ -90,48 +72,26 @@ export default function Home() {
           onNextMonth={handleNextMonth}
         />
 
-        {/* Controls Bar */}
         <div className="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
           <DateNavigation
             currentDate={currentDate}
-            view={activeView}
             onPrevious={handlePrevious}
             onNext={handleNext}
             onToday={handleToday}
           />
-          <ViewSelector
-            activeView={activeView}
-            onViewChange={setActiveView}
-          />
         </div>
 
-        {/* Calendar Grid */}
-        {activeView === 'day' ? (
-          <DayViewGrid date={currentDate}>
-            {sampleReminders.map((reminder) => (
-              <ReminderCard
-                key={reminder.id}
-                title={reminder.title}
-                time={reminder.time}
-                color={reminder.color}
-                onClick={() => console.log('Clicked:', reminder.title)}
-              />
-            ))}
-          </DayViewGrid>
-        ) : (
-          <WeekViewGrid date={currentDate}>
-            {sampleReminders.map((reminder) => (
-              <ReminderCard
-                key={reminder.id}
-                title={reminder.title}
-                time={reminder.time}
-                color={reminder.color}
-                dayIndex={reminder.time.getDay()}
-                onClick={() => console.log('Clicked:', reminder.title)}
-              />
-            ))}
-          </WeekViewGrid>
-        )}
+        <DayViewGrid date={currentDate}>
+          {sampleReminders.map((reminder) => (
+            <ReminderCard
+              key={reminder.id}
+              title={reminder.title}
+              time={reminder.time}
+              color={reminder.color}
+              onClick={() => console.log('Clicked:', reminder.title)}
+            />
+          ))}
+        </DayViewGrid>
       </div>
     </AppLayout>
   );
