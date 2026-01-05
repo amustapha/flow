@@ -11,6 +11,8 @@ services:
       - /app/__pycache__
     environment:
       - DATABASE_URL=sqlite:///./flow.db
+      - PYTHONUNBUFFERED=1
+      - WATCHFILES_FORCE_POLLING=false
     env_file:
       - ./backend/.env
     restart: unless-stopped

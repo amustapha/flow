@@ -80,7 +80,8 @@ docker compose exec frontend sh
 
 1. **Code Changes**: Edit files in `frontend/` or `backend/` directories
    - Frontend: Next.js dev server auto-reloads on changes
-   - Backend: Uvicorn auto-reloads on Python file changes
+   - Backend: Uvicorn with watchfiles auto-reloads on Python file changes (watches `/app/app` directory)
+   - File changes are detected immediately through Docker volume mounts
 
 2. **Installing Dependencies**:
    - Frontend: Edit `frontend/package.json`, then run `docker compose up --build frontend`
