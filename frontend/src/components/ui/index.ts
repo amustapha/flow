@@ -8,3 +8,4 @@ export * from './Dropdown';
 export * from './Icon';
 export * from './Input';
 export * from './Modal';
+export * from './PhoneNumberInput';
