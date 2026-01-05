@@ -16,6 +16,7 @@ export interface CreateReminderModalProps {
   onSave: (reminder: Partial<Reminder>) => void;
   reminder?: Reminder | null;
   isSaving?: boolean;
+  initialDateTime?: Date;
 }
 
 interface FormData {
@@ -42,6 +43,7 @@ export function CreateReminderModal({
   onSave,
   reminder,
   isSaving = false,
+  initialDateTime,
 }: CreateReminderModalProps) {
   const isEditMode = !!reminder;
 
@@ -74,18 +76,28 @@ export function CreateReminderModal({
       });
     } else {
       // Reset form for create mode
+      let date = undefined;
+      let time = '';
+
+      if (initialDateTime) {
+        date = initialDateTime;
+        const hours = initialDateTime.getHours().toString().padStart(2, '0');
+        const minutes = initialDateTime.getMinutes().toString().padStart(2, '0');
+        time = `${hours}:${minutes}`;
+      }
+
       setFormData({
         title: '',
         message: '',
         phoneNumber: '',
-        date: undefined,
-        time: '',
+        date,
+        time,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       });
     }
     setErrors({});
     setTouched({});
-  }, [reminder, isOpen]);
+  }, [reminder, isOpen, initialDateTime]);
 
   const validateField = (name: keyof FormData, value: any): string | undefined => {
     switch (name) {

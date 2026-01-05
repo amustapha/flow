@@ -25,6 +25,7 @@ export default function Home() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [reminderToEdit, setReminderToEdit] = useState<Reminder | null>(null);
   const [reminderToDelete, setReminderToDelete] = useState<Reminder | null>(null);
+  const [initialDateTime, setInitialDateTime] = useState<Date | undefined>(undefined);
 
   const monthNames = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -99,15 +100,18 @@ export default function Home() {
   const handleCloseCreateModal = () => {
     setIsCreateModalOpen(false);
     setReminderToEdit(null);
+    setInitialDateTime(undefined);
   };
 
   const handleCreateReminder = () => {
     setReminderToEdit(null);
+    setInitialDateTime(undefined);
     setIsCreateModalOpen(true);
   };
 
   const handleEmptySpaceClick = (time: Date) => {
     setReminderToEdit(null);
+    setInitialDateTime(time);
     setIsCreateModalOpen(true);
   };
 
@@ -154,6 +158,7 @@ export default function Home() {
         onClose={handleCloseCreateModal}
         onSave={handleSaveReminder}
         reminder={reminderToEdit}
+        initialDateTime={initialDateTime}
       />
 
       <ConfirmDeleteModal
