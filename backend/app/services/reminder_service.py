@@ -1,5 +1,5 @@
 """Service layer for Reminder business logic."""
-from datetime import date
+from datetime import date, timedelta
 from typing import Optional
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
@@ -31,14 +31,11 @@ class ReminderService(BaseService[Reminder, ReminderCreate, ReminderUpdate]):
 
         if filter_date:
             # Filter by date (ignoring time component)
+            next_day = filter_date + timedelta(days=1)
             query = query.filter(
                 and_(
                     Reminder.scheduled_time >= filter_date,
-                    Reminder.scheduled_time < date(
-                        filter_date.year,
-                        filter_date.month,
-                        filter_date.day + 1 if filter_date.day < 31 else 1,
-                    ),
+                    Reminder.scheduled_time < next_day,
                 )
             )
 
