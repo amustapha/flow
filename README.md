@@ -1,4 +1,5 @@
 # flow
+The objective is to create a “Call Me Reminder” app that has a clean UI and calls a user with a reminder
 
 ## My Approach
 1. I'll spend the first 30 minutes searching accross behance, ui8 and dribble for UI inspirations to give me solid ideas of clean simple UIs which i can then try to recreate and adapt
