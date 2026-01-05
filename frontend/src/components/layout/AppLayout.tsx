@@ -63,9 +63,9 @@ export function AppLayout({ children, sidebar }: AppLayoutProps) {
             size="sm"
             onClick={toggleSidebar}
             aria-label="Open sidebar"
-            className="h-8 w-8 p-0"
+            className="h-10 w-10 p-0"
           >
-            <Bars3Icon className="h-5 w-5" />
+            <Bars3Icon className="h-6 w-6" />
           </Button>
           <h1 className="text-lg font-semibold text-gray-900">Flow</h1>
         </header>
