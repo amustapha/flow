@@ -2,6 +2,7 @@
 export * from './Avatar';
 export * from './Badge';
 export * from './Button';
+export * from './Calendar';
 export * from './Checkbox';
 export * from './Dropdown';
 export * from './Icon';
