@@ -1,1 +1,9 @@
 // UI components barrel export
+export * from './Avatar';
+export * from './Badge';
+export * from './Button';
+export * from './Checkbox';
+export * from './Dropdown';
+export * from './Icon';
+export * from './Input';
+export * from './Modal';
