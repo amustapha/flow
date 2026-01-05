@@ -22,7 +22,6 @@ export function useReminders(date: Date) {
           scheduledTime: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 9, 30),
           timezone: 'America/Los_Angeles',
           status: 'pending',
-          color: 'purple',
         },
         {
           id: '2',
@@ -32,7 +31,6 @@ export function useReminders(date: Date) {
           scheduledTime: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 14, 0),
           timezone: 'America/Los_Angeles',
           status: 'pending',
-          color: 'blue',
         },
         {
           id: '3',
@@ -42,7 +40,6 @@ export function useReminders(date: Date) {
           scheduledTime: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 18, 30),
           timezone: 'America/Los_Angeles',
           status: 'pending',
-          color: 'green',
         },
       ];
 
