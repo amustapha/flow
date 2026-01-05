@@ -53,109 +53,115 @@ async function fetchApi<T>(
   return response.json();
 }
 
-export const reminderService = {
+/**
+ * Base API service with generic CRUD operations
+ */
+class BaseApiService<TModel, TCreate, TUpdate> {
+  constructor(protected endpoint: string) {}
+
   /**
-   * Create a new reminder
+   * Create a new resource
    */
-  create: async (data: ReminderCreate): Promise<Reminder> => {
-    return fetchApi<Reminder>('/api/v1/reminders/', {
+  async create(data: TCreate): Promise<TModel> {
+    return fetchApi<TModel>(`${this.endpoint}/`, {
       method: 'POST',
       body: JSON.stringify(data),
     });
-  },
+  }
+
+  /**
+   * Get a single resource by ID
+   */
+  async get(id: string): Promise<TModel> {
+    return fetchApi<TModel>(`${this.endpoint}/${id}`);
+  }
+
+  /**
+   * Update a resource
+   */
+  async update(id: string, data: TUpdate): Promise<TModel> {
+    return fetchApi<TModel>(`${this.endpoint}/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
+  /**
+   * Delete a resource
+   */
+  async delete(id: string): Promise<void> {
+    return fetchApi<void>(`${this.endpoint}/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  /**
+   * Build query string from params
+   */
+  protected buildQueryString(params: Record<string, any>): string {
+    const searchParams = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        searchParams.append(key, value.toString());
+      }
+    });
+    return searchParams.toString();
+  }
+}
+
+/**
+ * Reminder API service
+ */
+class ReminderService extends BaseApiService<Reminder, ReminderCreate, ReminderUpdate> {
+  constructor() {
+    super('/api/v1/reminders');
+  }
 
   /**
    * Get all reminders with optional filtering and pagination
    */
-  list: async (params?: {
+  async list(params?: {
     status?: string;
     date?: string;
     page?: number;
     page_size?: number;
-  }): Promise<ReminderListResponse> => {
-    const searchParams = new URLSearchParams();
-    if (params?.status) searchParams.append('status', params.status);
-    if (params?.date) searchParams.append('date', params.date);
-    if (params?.page) searchParams.append('page', params.page.toString());
-    if (params?.page_size) searchParams.append('page_size', params.page_size.toString());
-
-    const query = searchParams.toString();
-    const endpoint = `/api/v1/reminders/${query ? `?${query}` : ''}`;
-
+  }): Promise<ReminderListResponse> {
+    const query = params ? this.buildQueryString(params) : '';
+    const endpoint = `${this.endpoint}/${query ? `?${query}` : ''}`;
     return fetchApi<ReminderListResponse>(endpoint);
-  },
+  }
+}
+
+/**
+ * Call API service
+ */
+class CallService extends BaseApiService<Call, CallCreate, CallUpdate> {
+  constructor() {
+    super('/api/v1/calls');
+  }
 
   /**
-   * Get a single reminder by ID
+   * Get a single call by ID with reminder details
    */
-  get: async (id: string): Promise<Reminder> => {
-    return fetchApi<Reminder>(`/api/v1/reminders/${id}`);
-  },
-
-  /**
-   * Update a reminder
-   */
-  update: async (id: string, data: ReminderUpdate): Promise<Reminder> => {
-    return fetchApi<Reminder>(`/api/v1/reminders/${id}`, {
-      method: 'PATCH',
-      body: JSON.stringify(data),
-    });
-  },
-
-  /**
-   * Delete a reminder
-   */
-  delete: async (id: string): Promise<void> => {
-    return fetchApi<void>(`/api/v1/reminders/${id}`, {
-      method: 'DELETE',
-    });
-  },
-};
-
-export const callService = {
-  /**
-   * Create a new call
-   */
-  create: async (data: CallCreate): Promise<Call> => {
-    return fetchApi<Call>('/api/v1/calls/', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
-  },
+  async get(id: string): Promise<CallWithReminder> {
+    return fetchApi<CallWithReminder>(`${this.endpoint}/${id}`);
+  }
 
   /**
    * Get all calls with optional filtering
    */
-  list: async (params?: {
+  async list(params?: {
     reminder_id?: string;
     status?: string;
-  }): Promise<CallWithReminder[]> => {
-    const searchParams = new URLSearchParams();
-    if (params?.reminder_id) searchParams.append('reminder_id', params.reminder_id);
-    if (params?.status) searchParams.append('status', params.status);
-
-    const query = searchParams.toString();
-    const endpoint = `/api/v1/calls/${query ? `?${query}` : ''}`;
-
+  }): Promise<CallWithReminder[]> {
+    const query = params ? this.buildQueryString(params) : '';
+    const endpoint = `${this.endpoint}/${query ? `?${query}` : ''}`;
     return fetchApi<CallWithReminder[]>(endpoint);
-  },
+  }
+}
 
-  /**
-   * Get a single call by ID
-   */
-  get: async (id: string): Promise<CallWithReminder> => {
-    return fetchApi<CallWithReminder>(`/api/v1/calls/${id}`);
-  },
-
-  /**
-   * Update a call
-   */
-  update: async (id: string, data: CallUpdate): Promise<Call> => {
-    return fetchApi<Call>(`/api/v1/calls/${id}`, {
-      method: 'PATCH',
-      body: JSON.stringify(data),
-    });
-  },
-};
+// Export service instances
+export const reminderService = new ReminderService();
+export const callService = new CallService();
 
 export { ApiError };
