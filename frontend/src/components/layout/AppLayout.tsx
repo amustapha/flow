@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, ReactNode } from 'react';
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { CalendarIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/components/ui';
 import { cn } from '@/lib/utils';
 
@@ -42,9 +42,9 @@ export function AppLayout({ children, sidebar }: AppLayoutProps) {
             size="sm"
             onClick={closeSidebar}
             aria-label="Close sidebar"
-            className="h-8 w-8 p-0"
+            className="h-12 w-12 p-0"
           >
-            <XMarkIcon className="h-5 w-5" />
+            <XMarkIcon className="h-12 w-12" />
           </Button>
         </div>
 
@@ -63,9 +63,9 @@ export function AppLayout({ children, sidebar }: AppLayoutProps) {
             size="sm"
             onClick={toggleSidebar}
             aria-label="Open sidebar"
-            className="h-10 w-10 p-0"
+            className="h-12 w-12 p-0"
           >
-            <Bars3Icon className="h-6 w-6" />
+            <CalendarIcon className="h-12 w-12" />
           </Button>
           <h1 className="text-lg font-semibold text-gray-900">Flow</h1>
         </header>
