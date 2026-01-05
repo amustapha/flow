@@ -69,7 +69,7 @@ export default function Home() {
               title={reminder.title}
               time={reminder.scheduledTime}
               color={reminder.color}
-              onClick={() => console.log('Clicked:', reminder.title)}
+              onClick={() => console.log('Clicked:', reminder)}
             />
           ))}
         </DayViewGrid>
