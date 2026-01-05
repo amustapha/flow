@@ -11,6 +11,7 @@ import {
 import {
   ReminderDetailModal,
   CreateReminderModal,
+  ConfirmDeleteModal,
 } from '@/components/reminder';
 import { useReminders } from '@/hooks';
 import { Reminder } from '@/types';
@@ -21,7 +22,9 @@ export default function Home() {
   const [selectedReminder, setSelectedReminder] = useState<Reminder | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [reminderToEdit, setReminderToEdit] = useState<Reminder | null>(null);
+  const [reminderToDelete, setReminderToDelete] = useState<Reminder | null>(null);
 
   const monthNames = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -64,9 +67,21 @@ export default function Home() {
   };
 
   const handleDeleteReminder = (reminder: Reminder) => {
-    console.log('Delete reminder:', reminder);
+    setReminderToDelete(reminder);
     setIsDetailModalOpen(false);
-    // TODO: Implement delete functionality
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = (reminder: Reminder) => {
+    console.log('Confirmed delete reminder:', reminder);
+    setIsDeleteModalOpen(false);
+    setReminderToDelete(null);
+    // TODO: Implement actual delete functionality with API call
+  };
+
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setReminderToDelete(null);
   };
 
   const handleSaveReminder = (reminderData: Partial<Reminder>) => {
@@ -86,8 +101,18 @@ export default function Home() {
     setReminderToEdit(null);
   };
 
+  const handleCreateReminder = () => {
+    setReminderToEdit(null);
+    setIsCreateModalOpen(true);
+  };
+
+  const handleEmptySpaceClick = (time: Date) => {
+    setReminderToEdit(null);
+    setIsCreateModalOpen(true);
+  };
+
   return (
-    <AppLayout sidebar={<Sidebar />}>
+    <AppLayout sidebar={<Sidebar onCreateReminder={handleCreateReminder} />}>
       <div className="flex h-full flex-col">
         <CalendarHeader
           month={monthNames[currentDate.getMonth()]}
@@ -105,7 +130,7 @@ export default function Home() {
           />
         </div>
 
-        <DayViewGrid date={currentDate}>
+        <DayViewGrid date={currentDate} onEmptySpaceClick={handleEmptySpaceClick}>
           {!isLoading && reminders.map((reminder) => (
             <ReminderCard
               key={reminder.id}
@@ -129,6 +154,13 @@ export default function Home() {
         onClose={handleCloseCreateModal}
         onSave={handleSaveReminder}
         reminder={reminderToEdit}
+      />
+
+      <ConfirmDeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={handleCloseDeleteModal}
+        reminder={reminderToDelete}
+        onConfirm={handleConfirmDelete}
       />
     </AppLayout>
   );
