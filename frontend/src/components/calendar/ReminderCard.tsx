@@ -1,30 +1,42 @@
 'use client';
 
 import { cn } from '@/lib/utils';
+import { Reminder } from '@/types';
 
 export interface ReminderCardProps {
-  title: string;
-  time: Date;
-  color?: 'purple' | 'blue' | 'green' | 'orange' | 'red';
+  reminder: Reminder;
   onClick?: () => void;
   overlapIndex?: number;
   totalOverlaps?: number;
 }
 
 export function ReminderCard({
-  title,
-  time,
-  color = 'purple',
+  reminder,
   onClick,
   overlapIndex = 0,
   totalOverlaps = 1,
 }: ReminderCardProps) {
+  const { title, scheduledTime: time } = reminder;
+  const getColor = () => {
+    const now = new Date();
+    const timeDiff = time.getTime() - now.getTime();
+    const minutesDiff = timeDiff / (1000 * 60);
+
+    if (minutesDiff < -5) {
+      return 'gray';
+    } else if (minutesDiff >= -5 && minutesDiff <= 15) {
+      return 'purple';
+    } else {
+      return 'blue';
+    }
+  };
+
+  const color = getColor();
+
   const colorClasses = {
+    gray: 'bg-gray-100 border-gray-400 text-gray-900 hover:bg-gray-200',
     purple: 'bg-purple-100 border-purple-400 text-purple-900 hover:bg-purple-200',
     blue: 'bg-blue-100 border-blue-400 text-blue-900 hover:bg-blue-200',
-    green: 'bg-green-100 border-green-400 text-green-900 hover:bg-green-200',
-    orange: 'bg-orange-100 border-orange-400 text-orange-900 hover:bg-orange-200',
-    red: 'bg-red-100 border-red-400 text-red-900 hover:bg-red-200',
   };
 
   const getPosition = () => {

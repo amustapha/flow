@@ -66,9 +66,7 @@ export default function Home() {
           {!isLoading && reminders.map((reminder) => (
             <ReminderCard
               key={reminder.id}
-              title={reminder.title}
-              time={reminder.scheduledTime}
-              color={reminder.color}
+              reminder={reminder}
               onClick={() => console.log('Clicked:', reminder)}
             />
           ))}

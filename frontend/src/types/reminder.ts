@@ -6,5 +6,4 @@ export interface Reminder {
   scheduledTime: Date;
   timezone: string;
   status?: 'pending' | 'completed' | 'failed' | 'cancelled';
-  color?: 'purple' | 'blue' | 'green' | 'orange' | 'red';
 }
