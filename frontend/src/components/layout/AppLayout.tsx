@@ -71,7 +71,7 @@ export function AppLayout({ children, sidebar }: AppLayoutProps) {
         </header>
 
         {/* Main content */}
-        <main className="min-h-[calc(100vh-4rem)] p-4 lg:min-h-screen lg:p-8">
+        <main className="min-h-[calc(100vh-4rem)] lg:min-h-screen">
           {children}
         </main>
       </div>
