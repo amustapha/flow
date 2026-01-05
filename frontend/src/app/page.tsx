@@ -126,6 +126,7 @@ export default function Home() {
                 title={reminder.title}
                 time={reminder.time}
                 color={reminder.color}
+                dayIndex={reminder.time.getDay()}
                 onClick={() => console.log('Clicked:', reminder.title)}
               />
             ))}
