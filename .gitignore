@@ -22,3 +22,5 @@ logs/
 *.db
 *.sqlite
 *.sqlite3
+
+**.local**
