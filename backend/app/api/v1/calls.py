@@ -25,7 +25,7 @@ def create_call(
     service: CallService = Depends(get_call_service),
 ):
     """Create a new call for a reminder."""
-    call = service.create_call(call_data)
+    call = service.create(call_data)
     if not call:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -62,7 +62,7 @@ def list_calls(
 )
 def get_call(call_id: UUID, service: CallService = Depends(get_call_service)):
     """Get a specific call by its ID with reminder details."""
-    call = service.get_call(call_id)
+    call = service.get(call_id)
     if not call:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -82,7 +82,7 @@ def update_call(
     service: CallService = Depends(get_call_service),
 ):
     """Update a call with partial data."""
-    call = service.update_call(call_id, call_data)
+    call = service.update(call_id, call_data)
     if not call:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

@@ -26,7 +26,7 @@ def create_reminder(
     service: ReminderService = Depends(get_reminder_service),
 ):
     """Create a new reminder with the provided data."""
-    reminder = service.create_reminder(reminder_data)
+    reminder = service.create(reminder_data)
     return reminder
 
 
@@ -70,7 +70,7 @@ def get_reminder(
     reminder_id: UUID, service: ReminderService = Depends(get_reminder_service)
 ):
     """Get a specific reminder by its ID."""
-    reminder = service.get_reminder(reminder_id)
+    reminder = service.get(reminder_id)
     if not reminder:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -90,7 +90,7 @@ def update_reminder(
     service: ReminderService = Depends(get_reminder_service),
 ):
     """Update a reminder with partial data."""
-    reminder = service.update_reminder(reminder_id, reminder_data)
+    reminder = service.update(reminder_id, reminder_data)
     if not reminder:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -108,7 +108,7 @@ def delete_reminder(
     reminder_id: UUID, service: ReminderService = Depends(get_reminder_service)
 ):
     """Delete a reminder by ID. This will also delete all associated calls."""
-    success = service.delete_reminder(reminder_id)
+    success = service.delete(reminder_id)
     if not success:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
