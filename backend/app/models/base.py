@@ -1,12 +1,13 @@
 """Base models with common functionality."""
 import uuid
+from abc import ABC
 from sqlalchemy import Column, DateTime
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 from app.core.database import Base
 
 
-class TimestampedBase(Base):
+class TimestampedBase(Base, ABC):
     """Abstract base class with id, created_at and updated_at fields."""
 
     __abstract__ = True
