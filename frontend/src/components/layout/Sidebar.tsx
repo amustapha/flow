@@ -1,12 +1,14 @@
 'use client';
 
 import { Calendar, Button } from '@/components/ui';
+import { Cog6ToothIcon } from '@heroicons/react/24/outline';
 
 export interface SidebarProps {
   onCreateReminder?: () => void;
+  onOpenSettings?: () => void;
 }
 
-export function Sidebar({ onCreateReminder }: SidebarProps) {
+export function Sidebar({ onCreateReminder, onOpenSettings }: SidebarProps) {
 
   return (
     <div className="flex h-full flex-col">
@@ -21,8 +23,8 @@ export function Sidebar({ onCreateReminder }: SidebarProps) {
         <Calendar />
       </div>
 
-      {/* Create Reminder Button - at bottom */}
-      <div className="mt-auto border-t border-gray-200 pt-4">
+      {/* Action Buttons - at bottom */}
+      <div className="mt-auto space-y-3 border-t border-gray-200 pt-4">
         <Button
           variant="primary"
           onClick={onCreateReminder}
@@ -30,6 +32,13 @@ export function Sidebar({ onCreateReminder }: SidebarProps) {
         >
           + Create Reminder
         </Button>
+        <button
+          onClick={onOpenSettings}
+          className="flex w-full items-center justify-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2"
+        >
+          <Cog6ToothIcon className="h-5 w-5" />
+          Settings
+        </button>
       </div>
     </div>
   );
