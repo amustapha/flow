@@ -5,7 +5,7 @@ export default function Home() {
         <h1 className="text-4xl font-semibold tracking-tight">
           Flow
         </h1>
-        <p className="text-lg text-muted-foreground">
+        <p className="text-lg text-gray-600">
           Voice-powered reminders that never let you down
         </p>
       </main>
