@@ -1,3 +1,5 @@
+'use client';
+
 import { forwardRef, useState, useEffect } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/16/solid';
 import { cn } from '@/lib/utils';
