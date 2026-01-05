@@ -12,49 +12,90 @@ A reminder application that automatically calls users at scheduled times and spe
 ## Prerequisites
 
 - Docker and Docker Compose
-- Node.js 20+ (for local development)
-- Python 3.12+ (for local development)
 
 ## Quick Start
 
-### Using Docker (Recommended)
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd flow
+   ```
 
-1. Clone the repository
 2. Copy the example environment file:
    ```bash
    cp backend/.env.example backend/.env
    ```
-3. Update the `.env` file with your API keys
-4. Start the services:
+
+3. Update `backend/.env` with your API keys (see Environment Variables section below)
+
+4. Start the application:
    ```bash
    docker compose up
    ```
+
 5. Access the application:
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:8000
-   - API Documentation: http://localhost:8000/docs
+   - **Frontend**: http://localhost:3000
+   - **Backend API**: http://localhost:8000
+   - **API Documentation**: http://localhost:8000/docs
 
-### Local Development
+## Development with Docker
 
-#### Backend Setup
+The project is configured for local development using Docker with hot reload enabled for both frontend and backend.
 
-```bash
-cd backend
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
-cp .env.example .env
-# Update .env with your API keys
-uvicorn app.main:app --reload
-```
-
-#### Frontend Setup
+### Docker Commands
 
 ```bash
-cd frontend
-npm install
-npm run dev
+# Start services with live reload
+docker compose up
+
+# Start services in detached mode
+docker compose up -d
+
+# View logs
+docker compose logs -f
+
+# View logs for specific service
+docker compose logs -f frontend
+docker compose logs -f backend
+
+# Stop services
+docker compose down
+
+# Rebuild and start services (after dependency changes)
+docker compose up --build
+
+# Stop services and remove volumes
+docker compose down -v
+
+# Execute commands in running containers
+docker compose exec backend python -m pytest
+docker compose exec frontend npm run lint
+
+# Access container shell
+docker compose exec backend sh
+docker compose exec frontend sh
 ```
+
+### Development Workflow
+
+1. **Code Changes**: Edit files in `frontend/` or `backend/` directories
+   - Frontend: Next.js dev server auto-reloads on changes
+   - Backend: Uvicorn auto-reloads on Python file changes
+
+2. **Installing Dependencies**:
+   - Frontend: Edit `frontend/package.json`, then run `docker compose up --build frontend`
+   - Backend: Edit `backend/requirements.txt`, then run `docker compose up --build backend`
+
+3. **Database Changes**: Database file persists in `backend/flow.db`
+
+4. **Running Tests**:
+   ```bash
+   # Backend tests
+   docker compose exec backend python -m pytest
+
+   # Frontend tests
+   docker compose exec frontend npm test
+   ```
 
 ## Environment Variables
 
