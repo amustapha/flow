@@ -8,9 +8,11 @@ import {
   DayViewGrid,
   ReminderCard,
 } from '@/components/calendar';
+import { useReminders } from '@/hooks';
 
 export default function Home() {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const { reminders, isLoading } = useReminders(currentDate);
 
   const monthNames = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -41,27 +43,6 @@ export default function Home() {
     setCurrentDate(new Date());
   };
 
-  const sampleReminders = [
-    {
-      id: 1,
-      title: 'Team Meeting',
-      time: new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 9, 30),
-      color: 'purple' as const,
-    },
-    {
-      id: 2,
-      title: 'Dentist Appointment',
-      time: new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 14, 0),
-      color: 'blue' as const,
-    },
-    {
-      id: 3,
-      title: 'Gym Session',
-      time: new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 18, 30),
-      color: 'green' as const,
-    },
-  ];
-
   return (
     <AppLayout sidebar={<Sidebar />}>
       <div className="flex h-full flex-col">
@@ -82,11 +63,11 @@ export default function Home() {
         </div>
 
         <DayViewGrid date={currentDate}>
-          {sampleReminders.map((reminder) => (
+          {!isLoading && reminders.map((reminder) => (
             <ReminderCard
               key={reminder.id}
               title={reminder.title}
-              time={reminder.time}
+              time={reminder.scheduledTime}
               color={reminder.color}
               onClick={() => console.log('Clicked:', reminder.title)}
             />
