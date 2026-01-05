@@ -1,25 +1,18 @@
-# Development environment - for production use docker-compose.prod.yml
 services:
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-      target: dev
-    container_name: flow-backend-dev
+      target: prod
+    container_name: flow-backend-prod
     ports:
       - "8000:8000"
-    volumes:
-      - ./backend:/app
-      - /app/__pycache__
     environment:
       - DATABASE_URL=sqlite:///./flow.db
       - PYTHONUNBUFFERED=1
-      - WATCHFILES_FORCE_POLLING=false
-      - ENV=development
     env_file:
       - ./backend/.env
-    stdin_open: true
-    tty: true
+    restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
@@ -30,21 +23,15 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      target: dev
-    container_name: flow-frontend-dev
+      target: runner
+    container_name: flow-frontend-prod
     ports:
       - "3000:3000"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-      - /app/.next
     environment:
       - NEXT_PUBLIC_API_URL=http://localhost:8000
-      - NODE_ENV=development
     depends_on:
       - backend
-    stdin_open: true
-    tty: true
+    restart: unless-stopped
 
 volumes:
   backend_data:

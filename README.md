@@ -38,6 +38,25 @@ A reminder application that automatically calls users at scheduled times and spe
    - **Backend API**: http://localhost:8000
    - **API Documentation**: http://localhost:8000/docs
 
+## Docker Architecture
+
+The project uses multi-stage Docker builds with separate configurations for development and production:
+
+- **Development** (`docker-compose.yml`): Hot-reloading, volume mounts, interactive debugging
+- **Production** (`docker-compose.prod.yml`): Optimized builds, no volumes, auto-restart
+
+### Multi-Stage Builds
+
+**Backend Dockerfile**:
+- `base`: Common base with system dependencies
+- `dev`: Development stage with `uvicorn --reload`
+- `prod`: Production stage with 4 workers
+
+**Frontend Dockerfile**:
+- `base`: Base Node.js image
+- `dev`: Development stage running `npm run dev`
+- `deps`, `builder`, `runner`: Production optimization stages
+
 ## Development with Docker
 
 The project is configured for local development using Docker with hot reload enabled for both frontend and backend.
@@ -75,6 +94,31 @@ docker compose exec frontend npm run lint
 docker compose exec backend sh
 docker compose exec frontend sh
 ```
+
+## Production Deployment
+
+For production deployment, use the optimized production compose file:
+
+```bash
+# Build and start production services
+docker compose -f docker-compose.prod.yml up -d
+
+# View logs
+docker compose -f docker-compose.prod.yml logs -f
+
+# Stop services
+docker compose -f docker-compose.prod.yml down
+
+# Rebuild images
+docker compose -f docker-compose.prod.yml build --no-cache
+```
+
+**Production Features**:
+- Optimized builds with minimal image sizes
+- Backend runs with 4 uvicorn workers for better throughput
+- Frontend uses Next.js standalone build
+- Services auto-restart on failure
+- No volume mounts (code baked into images)
 
 ### Development Workflow
 
