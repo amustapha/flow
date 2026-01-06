@@ -14,6 +14,13 @@ class Settings(BaseSettings):
     VAPI_API_URL: str = "https://api.vapi.ai"
     VAPI_PHONE_NUMBER_ID: str = ""  # ID of Twilio number imported into Vapi
 
+    # Vapi Assistant Configuration
+    VAPI_MODEL_PROVIDER: str = "openai"
+    VAPI_MODEL_NAME: str = "gpt-4"
+    VAPI_MODEL_TEMPERATURE: float = 0.7
+    VAPI_VOICE_PROVIDER: str = "11labs"
+    VAPI_VOICE_ID: str = "21m00Tcm4TlvDq8ikWAM"
+
     # Twilio Configuration
     TWILIO_ACCOUNT_SID: str = ""
     TWILIO_AUTH_TOKEN: str = ""
