@@ -1,6 +1,6 @@
 'use client';
 
-import { Modal, Button, TimeRemaining, StatusBadge } from '@/components/ui';
+import { Modal, Button, Countdown, StatusBadge } from '@/components/ui';
 import { Reminder } from '@/types';
 import { useSettings } from '@/contexts';
 
@@ -77,7 +77,7 @@ export function ReminderDetailModal({
         <div className="rounded-lg bg-purple-50 border border-purple-200 p-3">
           <div className="flex items-center gap-2">
             <h4 className="text-sm font-medium text-gray-700">Time Remaining:</h4>
-            <TimeRemaining targetDate={reminder.scheduled_time} showIcon />
+            <Countdown targetDate={reminder.scheduled_time} variant="primary" size="md" />
           </div>
         </div>
 

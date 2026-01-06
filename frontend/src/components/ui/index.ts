@@ -13,4 +13,3 @@ export * from './Modal';
 export * from './PhoneNumberInput';
 export * from './StatusBadge';
 export * from './TimezoneInput';
-export * from './TimeRemaining';
