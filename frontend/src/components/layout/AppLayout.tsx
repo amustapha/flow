@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, ReactNode } from 'react';
-import { CalendarIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { CalendarIcon, Bars3Icon } from '@heroicons/react/24/outline';
 import { Button } from '@/components/ui';
 import { cn } from '@/lib/utils';
 
@@ -11,43 +11,19 @@ interface AppLayoutProps {
 }
 
 export function AppLayout({ children, sidebar }: AppLayoutProps) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(true);
 
-  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
-  const closeSidebar = () => setIsSidebarOpen(false);
+  const toggleView = () => setShowSidebar(!showSidebar);
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Mobile sidebar backdrop */}
-      {isSidebarOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-gray-900/50 backdrop-blur-sm transition-opacity duration-300 ease-in-out lg:hidden"
-          onClick={closeSidebar}
-          aria-hidden="true"
-        />
-      )}
-
-      {/* Sidebar */}
+      {/* Sidebar - always visible on desktop, toggleable on mobile */}
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-50 w-96 bg-white shadow-lg transition-transform duration-300 ease-in-out lg:translate-x-0 lg:z-30',
-          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          'fixed inset-y-0 left-0 z-30 w-96 bg-white shadow-lg lg:block',
+          showSidebar ? 'block' : 'hidden'
         )}
       >
-        {/* Mobile close button */}
-        <div className="flex h-16 items-center justify-between border-b border-gray-200 px-4 lg:hidden">
-          <span className="text-lg font-semibold text-gray-900">Menu</span>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={closeSidebar}
-            aria-label="Close sidebar"
-            className="h-12 w-12 p-0"
-          >
-            <XMarkIcon className="h-12 w-12" />
-          </Button>
-        </div>
-
         {/* Sidebar content */}
         <div className="h-full overflow-y-auto px-4 py-6 lg:py-8">
           {sidebar}
@@ -61,17 +37,26 @@ export function AppLayout({ children, sidebar }: AppLayoutProps) {
           <Button
             variant="ghost"
             size="sm"
-            onClick={toggleSidebar}
-            aria-label="Open sidebar"
+            onClick={toggleView}
+            aria-label="Toggle view"
             className="h-12 w-12 p-0"
           >
-            <CalendarIcon className="h-12 w-12" />
+            {showSidebar ? (
+              <Bars3Icon className="h-12 w-12" />
+            ) : (
+              <CalendarIcon className="h-12 w-12" />
+            )}
           </Button>
           <h1 className="text-lg font-semibold text-gray-900">Flow</h1>
         </header>
 
-        {/* Main content */}
-        <main className="min-h-[calc(100vh-4rem)] lg:min-h-screen">
+        {/* Main content - hidden on mobile when sidebar is shown */}
+        <main
+          className={cn(
+            'min-h-[calc(100vh-4rem)] lg:min-h-screen lg:block',
+            showSidebar ? 'hidden' : 'block'
+          )}
+        >
           {children}
         </main>
       </div>
