@@ -1,14 +1,15 @@
-'use client';
+"use client";
 
-import { BellIcon } from '@heroicons/react/24/outline';
-import { Calendar, Button } from '@/components/ui';
+import { BellIcon } from "@heroicons/react/24/outline";
+import { Calendar, Button } from "@/components/ui";
+import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 
 export interface SidebarProps {
   onCreateReminder?: () => void;
+  onOpenSettings?: () => void;
 }
 
-export function Sidebar({ onCreateReminder }: SidebarProps) {
-
+export function Sidebar({ onCreateReminder, onOpenSettings }: SidebarProps) {
   return (
     <div className="flex h-full flex-col">
       {/* Logo/Brand - hidden on mobile */}
@@ -22,15 +23,14 @@ export function Sidebar({ onCreateReminder }: SidebarProps) {
         <Calendar />
       </div>
 
-      {/* Create Reminder Button - at bottom */}
-      <div className="mt-auto border-t border-gray-200 pt-4">
-        <Button
-          variant="primary"
-          onClick={onCreateReminder}
-          className="w-full"
-        >
+      {/* Action Buttons - at bottom */}
+      <div className="mt-auto space-y-3 border-t border-gray-200 pt-4 flex  gap-2">
+        <Button variant="primary" onClick={onCreateReminder} className="w-full">
           <BellIcon className="h-5 w-5 mr-2" />
           Create Reminder
+        </Button>
+        <Button onClick={onOpenSettings} className="w-12" variant="ghost">
+          <Cog6ToothIcon className="h-6 w-6" />
         </Button>
       </div>
     </div>

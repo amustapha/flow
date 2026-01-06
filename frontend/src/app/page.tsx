@@ -13,6 +13,7 @@ import {
   CreateReminderModal,
   ConfirmDeleteModal,
 } from '@/components/reminder';
+import { SettingsModal } from '@/components/settings';
 import { useReminders } from '@/hooks';
 import { Reminder, ReminderCreate, ReminderUpdate } from '@/types';
 import { MONTH_NAMES } from '@/lib/constants';
@@ -25,6 +26,7 @@ export default function Home() {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [reminderToEdit, setReminderToEdit] = useState<Reminder | null>(null);
   const [reminderToDelete, setReminderToDelete] = useState<Reminder | null>(null);
   const [initialDateTime, setInitialDateTime] = useState<Date | undefined>(undefined);
@@ -128,8 +130,16 @@ export default function Home() {
     setIsCreateModalOpen(true);
   };
 
+  const handleOpenSettings = () => {
+    setIsSettingsModalOpen(true);
+  };
+
+  const handleCloseSettings = () => {
+    setIsSettingsModalOpen(false);
+  };
+
   return (
-    <AppLayout sidebar={<Sidebar onCreateReminder={handleCreateReminder} />}>
+    <AppLayout sidebar={<Sidebar onCreateReminder={handleCreateReminder} onOpenSettings={handleOpenSettings} />}>
       <div className="flex h-full flex-col">
         <CalendarHeader
           month={MONTH_NAMES[currentDate.getMonth()]}
@@ -187,6 +197,11 @@ export default function Home() {
         onClose={handleCloseDeleteModal}
         reminder={reminderToDelete}
         onConfirm={handleConfirmDelete}
+      />
+
+      <SettingsModal
+        isOpen={isSettingsModalOpen}
+        onClose={handleCloseSettings}
       />
     </AppLayout>
   );
