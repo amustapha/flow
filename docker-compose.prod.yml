@@ -103,12 +103,12 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       target: runner
+      args:
+        # Set in Dokploy UI - required at build time for Next.js
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
     container_name: flow-frontend-prod
     ports:
       - "4321:3000"
-    environment:
-      # Set in Dokploy UI - should point to backend API URL
-      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://backend:8000}
     depends_on:
       - backend
     restart: unless-stopped
