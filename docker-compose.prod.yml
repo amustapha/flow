@@ -15,8 +15,14 @@ services:
       - REDIS_PORT=6379
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
-    env_file:
-      - ./backend/.env
+      # VAPI Configuration - set in Dokploy UI
+      - VAPI_API_KEY=${VAPI_API_KEY}
+      - VAPI_PHONE_NUMBER_ID=${VAPI_PHONE_NUMBER_ID}
+      - VAPI_MODEL_PROVIDER=${VAPI_MODEL_PROVIDER:-openai}
+      - VAPI_MODEL_NAME=${VAPI_MODEL_NAME:-gpt-4}
+      - VAPI_MODEL_TEMPERATURE=${VAPI_MODEL_TEMPERATURE:-0.7}
+      - VAPI_VOICE_PROVIDER=${VAPI_VOICE_PROVIDER:-11labs}
+      - VAPI_VOICE_ID=${VAPI_VOICE_ID:-21m00Tcm4TlvDq8ikWAM}
     depends_on:
       - redis
     restart: unless-stopped
@@ -52,8 +58,14 @@ services:
       - REDIS_PORT=6379
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
-    env_file:
-      - ./backend/.env
+      # VAPI Configuration - set in Dokploy UI
+      - VAPI_API_KEY=${VAPI_API_KEY}
+      - VAPI_PHONE_NUMBER_ID=${VAPI_PHONE_NUMBER_ID}
+      - VAPI_MODEL_PROVIDER=${VAPI_MODEL_PROVIDER:-openai}
+      - VAPI_MODEL_NAME=${VAPI_MODEL_NAME:-gpt-4}
+      - VAPI_MODEL_TEMPERATURE=${VAPI_MODEL_TEMPERATURE:-0.7}
+      - VAPI_VOICE_PROVIDER=${VAPI_VOICE_PROVIDER:-11labs}
+      - VAPI_VOICE_ID=${VAPI_VOICE_ID:-21m00Tcm4TlvDq8ikWAM}
     depends_on:
       - redis
       - backend
@@ -73,8 +85,14 @@ services:
       - REDIS_PORT=6379
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
-    env_file:
-      - ./backend/.env
+      # VAPI Configuration - set in Dokploy UI
+      - VAPI_API_KEY=${VAPI_API_KEY}
+      - VAPI_PHONE_NUMBER_ID=${VAPI_PHONE_NUMBER_ID}
+      - VAPI_MODEL_PROVIDER=${VAPI_MODEL_PROVIDER:-openai}
+      - VAPI_MODEL_NAME=${VAPI_MODEL_NAME:-gpt-4}
+      - VAPI_MODEL_TEMPERATURE=${VAPI_MODEL_TEMPERATURE:-0.7}
+      - VAPI_VOICE_PROVIDER=${VAPI_VOICE_PROVIDER:-11labs}
+      - VAPI_VOICE_ID=${VAPI_VOICE_ID:-21m00Tcm4TlvDq8ikWAM}
     depends_on:
       - redis
       - backend
@@ -89,7 +107,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      # Set in Dokploy UI - should point to backend API URL
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://backend:8000}
     depends_on:
       - backend
     restart: unless-stopped
