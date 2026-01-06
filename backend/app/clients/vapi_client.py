@@ -59,13 +59,13 @@ class VapiClient:
             payload["assistant"] = {
                 "firstMessage": message,
                 "model": {
-                    "provider": "openai",
-                    "model": "gpt-4",
-                    "temperature": 0.7,
+                    "provider": settings.VAPI_MODEL_PROVIDER,
+                    "model": settings.VAPI_MODEL_NAME,
+                    "temperature": settings.VAPI_MODEL_TEMPERATURE,
                 },
                 "voice": {
-                    "provider": "11labs",
-                    "voiceId": "21m00Tcm4TlvDq8ikWAM",
+                    "provider": settings.VAPI_VOICE_PROVIDER,
+                    "voiceId": settings.VAPI_VOICE_ID,
                 },
                 "voicemailDetection": {
                     "provider": "twilio",
