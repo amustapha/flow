@@ -29,7 +29,7 @@ export function RemindersListView({
   // Initialize state from URL parameters
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
-  const [statusFilter, setStatusFilter] = useState<string>('');
+  const [statusFilter, setStatusFilter] = useState<string>(searchParams.get('status') || '');
 
   const { reminders, total, isLoading, error } = useReminders({
     page: currentPage,
@@ -39,7 +39,7 @@ export function RemindersListView({
   });
   const { timezone } = useSettings();
 
-  // Update URL when search query changes
+  // Update URL when search query or status filter changes
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
 
@@ -49,8 +49,14 @@ export function RemindersListView({
       params.delete('search');
     }
 
+    if (statusFilter && statusFilter.trim() !== '') {
+      params.set('status', statusFilter);
+    } else {
+      params.delete('status');
+    }
+
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-  }, [searchQuery, pathname, router, searchParams]);
+  }, [searchQuery, statusFilter, pathname, router, searchParams]);
 
   const totalPages = Math.ceil(total / pageSize);
 
