@@ -66,7 +66,7 @@ class ReminderService(BaseService[Reminder, ReminderCreate, ReminderUpdate]):
         # Get total count
         total = query.count()
 
-        # Apply pagination
-        reminders = query.offset(skip).limit(limit).all()
+        # Apply sorting and pagination
+        reminders = query.order_by(Reminder.scheduled_time).offset(skip).limit(limit).all()
 
         return reminders, total
