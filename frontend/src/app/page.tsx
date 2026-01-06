@@ -175,6 +175,7 @@ function HomeContent() {
           onSave={handleSaveReminder}
           reminder={modals.reminderToEdit}
           initialDateTime={modals.initialDateTime}
+          isSaving={operations.isProcessing}
         />
 
         <ConfirmDeleteModal
@@ -182,6 +183,7 @@ function HomeContent() {
           onClose={modals.closeDeleteModal}
           reminder={modals.reminderToDelete}
           onConfirm={handleConfirmDelete}
+          isDeleting={operations.isProcessing}
         />
 
         <SettingsModal

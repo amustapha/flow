@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { Reminder, ReminderCreate, ReminderUpdate } from '@/types';
 import { reminderService } from '@/services';
 
@@ -11,8 +11,10 @@ export interface UseReminderOperationsOptions {
 
 export function useReminderOperations(options: UseReminderOperationsOptions = {}) {
   const { onSuccess, onError } = options;
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleCreate = useCallback(async (data: ReminderCreate): Promise<Reminder | null> => {
+    setIsProcessing(true);
     try {
       const reminder = await reminderService.create(data);
       onSuccess?.();
@@ -22,10 +24,13 @@ export function useReminderOperations(options: UseReminderOperationsOptions = {}
       console.error('Failed to create reminder:', error);
       onError?.(error);
       return null;
+    } finally {
+      setIsProcessing(false);
     }
   }, [onSuccess, onError]);
 
   const handleUpdate = useCallback(async (id: string, data: ReminderUpdate): Promise<Reminder | null> => {
+    setIsProcessing(true);
     try {
       const reminder = await reminderService.update(id, data);
       onSuccess?.();
@@ -35,10 +40,13 @@ export function useReminderOperations(options: UseReminderOperationsOptions = {}
       console.error('Failed to update reminder:', error);
       onError?.(error);
       return null;
+    } finally {
+      setIsProcessing(false);
     }
   }, [onSuccess, onError]);
 
   const handleDelete = useCallback(async (id: string): Promise<boolean> => {
+    setIsProcessing(true);
     try {
       await reminderService.delete(id);
       onSuccess?.();
@@ -48,6 +56,8 @@ export function useReminderOperations(options: UseReminderOperationsOptions = {}
       console.error('Failed to delete reminder:', error);
       onError?.(error);
       return false;
+    } finally {
+      setIsProcessing(false);
     }
   }, [onSuccess, onError]);
 
@@ -66,5 +76,6 @@ export function useReminderOperations(options: UseReminderOperationsOptions = {}
     handleUpdate,
     handleDelete,
     handleSave,
+    isProcessing,
   };
 }
