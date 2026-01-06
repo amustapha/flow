@@ -17,7 +17,7 @@ export function AppLayout({ children, sidebar }: AppLayoutProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Sidebar - always visible on desktop, toggleable on mobile */}
+      {/* Sidebar - always visible on desktop, toggle on mobile */}
       <aside
         className={cn(
           'fixed inset-y-0 left-0 z-30 w-96 bg-white shadow-lg lg:block',
