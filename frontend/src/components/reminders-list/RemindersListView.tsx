@@ -6,7 +6,7 @@ import { toZonedTime } from 'date-fns-tz';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { useAllReminders } from '@/hooks';
 import { useSettings } from '@/contexts';
-import { Button, Badge } from '@/components/ui';
+import { Button, Badge, TimeRemaining } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { Reminder } from '@/types';
 
@@ -104,6 +104,9 @@ export function RemindersListView({
                       <p className="mt-1 text-xs text-gray-500">
                         {format(timeInZone, 'MMM d, yyyy h:mm a')}
                       </p>
+                      <div className="mt-1">
+                        <TimeRemaining targetDate={reminder.scheduled_time} className="text-xs" />
+                      </div>
                     </div>
                     {reminder.status && (
                       <Badge className={cn('text-xs', getStatusColor(reminder.status))}>
