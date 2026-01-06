@@ -1,2 +1,2 @@
-export * from './reminder';
-export * from './call';
+export * from './reminder.types';
+export * from './call.types';
