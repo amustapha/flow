@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { format } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
 import { ChevronLeftIcon, ChevronRightIcon, BellIcon, MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
@@ -21,9 +22,15 @@ export function RemindersListView({
   onCreateReminder,
   pageSize = 5,
 }: RemindersListViewProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // Initialize state from URL parameters
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
   const [statusFilter, setStatusFilter] = useState<string>('');
+
   const { reminders, total, isLoading, error } = useReminders({
     page: currentPage,
     pageSize,
@@ -31,6 +38,19 @@ export function RemindersListView({
     searchQuery: searchQuery || undefined,
   });
   const { timezone } = useSettings();
+
+  // Update URL when search query changes
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (searchQuery && searchQuery.trim() !== '') {
+      params.set('search', searchQuery);
+    } else {
+      params.delete('search');
+    }
+
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  }, [searchQuery, pathname, router, searchParams]);
 
   const totalPages = Math.ceil(total / pageSize);
 
