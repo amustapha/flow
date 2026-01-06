@@ -4,3 +4,4 @@ export * from "./calendar";
 export * from "./layout";
 export * from "./reminder";
 export * from "./settings";
+export * from "./reminders-list";
