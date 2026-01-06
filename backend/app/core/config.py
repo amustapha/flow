@@ -6,6 +6,9 @@ class Settings(BaseSettings):
     API_VERSION: str = "0.1.0"
     DATABASE_URL: str = "sqlite:///./flow.db"
 
+    # CORS Configuration
+    CORS_ORIGINS: list[str] = ["http://localhost:3000"]
+
     # Vapi Configuration
     VAPI_API_KEY: str = ""
     VAPI_API_URL: str = "https://api.vapi.ai"
