@@ -199,6 +199,9 @@ def process_scheduled_reminders() -> dict:
                 call = call_service.create(call_data)
 
                 if call:
+                    # Mark reminder as completed to prevent duplicate calls
+                    reminder.status = "Completed"
+                    db.commit()
                     processed_count += 1
                     logger.info(f"Created call for reminder {reminder.id}")
                 else:
