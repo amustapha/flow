@@ -54,3 +54,7 @@ logs/
 .pytest_cache/
 .coverage
 htmlcov/
+
+# Celery
+celerybeat-schedule
+celerybeat-schedule.*
