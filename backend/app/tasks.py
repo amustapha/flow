@@ -17,6 +17,7 @@ from app.services import CallService, ReminderService
 from app.models.call import Call
 from app.models.reminder import Reminder
 from app.schemas.call import CallCreate, CallUpdate
+from app.schemas.reminder import ReminderUpdate
 from app.schemas.base import ReminderStatus, CallStatus
 from app.core.exceptions import NotFoundError, ValidationError
 
@@ -154,7 +155,7 @@ def update_call_status(self, call_id: str, status: str) -> dict:
 
             if reminder:
                 reminder_status = ReminderStatus.COMPLETED if status == CallStatus.COMPLETED else ReminderStatus.FAILED
-                reminder_service.update(call.reminder_id, {"status": reminder_status})
+                reminder_service.update(call.reminder_id, ReminderUpdate(status=reminder_status))
                 logger.info(f"Updated reminder {call.reminder_id} status to {reminder_status}")
 
         return {
@@ -206,7 +207,7 @@ def process_scheduled_reminders(self) -> dict:
                 else:
                     failed_count += 1
                     reminder_service = ReminderService(db)
-                    reminder_service.update(reminder.id, {"status": ReminderStatus.FAILED})
+                    reminder_service.update(reminder.id, ReminderUpdate(status=ReminderStatus.FAILED))
                     logger.error(f"Failed to create call for reminder {reminder.id}")
 
             except Exception as e:
@@ -215,7 +216,7 @@ def process_scheduled_reminders(self) -> dict:
 
                 try:
                     reminder_service = ReminderService(db)
-                    reminder_service.update(reminder.id, {"status": ReminderStatus.FAILED})
+                    reminder_service.update(reminder.id, ReminderUpdate(status=ReminderStatus.FAILED))
                 except Exception as update_error:
                     logger.error(f"Failed to update reminder status: {str(update_error)}")
 
@@ -287,7 +288,7 @@ def cleanup_in_progress_calls(self) -> dict:
                         if new_status == CallStatus.COMPLETED
                         else ReminderStatus.FAILED
                     )
-                    reminder_service.update(call.reminder_id, {"status": reminder_status})
+                    reminder_service.update(call.reminder_id, ReminderUpdate(status=reminder_status))
                     logger.info(f"Updated reminder {call.reminder_id} status to {reminder_status}")
 
             except Exception as e:
