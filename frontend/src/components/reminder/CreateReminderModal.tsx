@@ -19,23 +19,11 @@ export interface CreateReminderModalProps {
   initialDateTime?: Date;
 }
 
-interface FormData {
-  title: string;
-  message: string;
-  phoneNumber: string;
+// Form state extends Reminder fields but uses date/time separately for UI
+type ReminderFormState = Pick<Reminder, 'title' | 'message' | 'phone_number' | 'timezone'> & {
   date: Date | undefined;
   time: string;
-  timezone: string;
-}
-
-interface FormErrors {
-  title?: string;
-  message?: string;
-  phoneNumber?: string;
-  date?: string;
-  time?: string;
-  timezone?: string;
-}
+};
 
 export function CreateReminderModal({
   isOpen,
@@ -47,29 +35,29 @@ export function CreateReminderModal({
 }: CreateReminderModalProps) {
   const isEditMode = !!reminder;
 
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<ReminderFormState>({
     title: '',
     message: '',
-    phoneNumber: '',
+    phone_number: '',
     date: undefined,
     time: '',
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   });
 
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [errors, setErrors] = useState<Partial<Record<keyof ReminderFormState, string>>>({});
+  const [touched, setTouched] = useState<Partial<Record<keyof ReminderFormState, boolean>>>({});
 
   // Initialize form data when reminder prop changes
   useEffect(() => {
     if (reminder) {
-      const reminderDate = new Date(reminder.scheduledTime);
+      const reminderDate = new Date(reminder.scheduled_time);
       const hours = reminderDate.getHours().toString().padStart(2, '0');
       const minutes = reminderDate.getMinutes().toString().padStart(2, '0');
 
       setFormData({
         title: reminder.title,
         message: reminder.message,
-        phoneNumber: reminder.phoneNumber,
+        phone_number: reminder.phone_number,
         date: reminderDate,
         time: `${hours}:${minutes}`,
         timezone: reminder.timezone,
@@ -89,7 +77,7 @@ export function CreateReminderModal({
       setFormData({
         title: '',
         message: '',
-        phoneNumber: '',
+        phone_number: '',
         date,
         time,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -99,25 +87,25 @@ export function CreateReminderModal({
     setTouched({});
   }, [reminder, isOpen, initialDateTime]);
 
-  const validateField = (name: keyof FormData, value: any): string | undefined => {
+  const validateField = (name: keyof ReminderFormState, value: ReminderFormState[keyof ReminderFormState]): string | undefined => {
     switch (name) {
       case 'title':
-        if (!isNonEmptyString(value)) {
+        if (typeof value === 'string' && !isNonEmptyString(value)) {
           return 'Title is required';
         }
         break;
 
       case 'message':
-        if (!isNonEmptyString(value)) {
+        if (typeof value === 'string' && !isNonEmptyString(value)) {
           return 'Message is required';
         }
         break;
 
-      case 'phoneNumber':
+      case 'phone_number':
         if (!value) {
           return 'Phone number is required';
         }
-        if (!isValidPhoneNumber(value)) {
+        if (typeof value === 'string' && !isValidPhoneNumber(value)) {
           return 'Please enter a valid phone number';
         }
         break;
@@ -126,16 +114,16 @@ export function CreateReminderModal({
         if (!value) {
           return 'Date is required';
         }
-        if (formData.time && !isFutureDateTime(value, formData.time)) {
+        if (value instanceof Date && formData.time && !isFutureDateTime(value, formData.time)) {
           return 'Date and time must be in the future';
         }
         break;
 
       case 'time':
-        if (!isNonEmptyString(value)) {
+        if (typeof value === 'string' && !isNonEmptyString(value)) {
           return 'Time is required';
         }
-        if (formData.date && !isFutureDateTime(formData.date, value)) {
+        if (typeof value === 'string' && formData.date && !isFutureDateTime(formData.date, value)) {
           return 'Date and time must be in the future';
         }
         break;
@@ -144,7 +132,7 @@ export function CreateReminderModal({
         if (!value) {
           return 'Timezone is required';
         }
-        if (!isValidTimezone(value)) {
+        if (typeof value === 'string' && !isValidTimezone(value)) {
           return 'Please select a valid timezone';
         }
         break;
@@ -152,11 +140,11 @@ export function CreateReminderModal({
   };
 
   const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
+    const newErrors: Partial<Record<keyof ReminderFormState, string>> = {};
 
     newErrors.title = validateField('title', formData.title);
     newErrors.message = validateField('message', formData.message);
-    newErrors.phoneNumber = validateField('phoneNumber', formData.phoneNumber);
+    newErrors.phone_number = validateField('phone_number', formData.phone_number);
     newErrors.date = validateField('date', formData.date);
     newErrors.time = validateField('time', formData.time);
     newErrors.timezone = validateField('timezone', formData.timezone);
@@ -166,7 +154,7 @@ export function CreateReminderModal({
     return !Object.values(newErrors).some((error) => error !== undefined);
   };
 
-  const handleFieldChange = (name: keyof FormData, value: any) => {
+  const handleFieldChange = (name: keyof ReminderFormState, value: ReminderFormState[keyof ReminderFormState]) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
 
     // Validate field if it has been touched
@@ -186,7 +174,7 @@ export function CreateReminderModal({
     }
   };
 
-  const handleBlur = (name: keyof FormData) => {
+  const handleBlur = (name: keyof ReminderFormState) => {
     setTouched((prev) => ({ ...prev, [name]: true }));
     const error = validateField(name, formData[name]);
     setErrors((prev) => ({ ...prev, [name]: error }));
@@ -197,7 +185,7 @@ export function CreateReminderModal({
     setTouched({
       title: true,
       message: true,
-      phoneNumber: true,
+      phone_number: true,
       date: true,
       time: true,
       timezone: true,
@@ -209,15 +197,15 @@ export function CreateReminderModal({
 
     // Combine date and time
     const [hours, minutes] = formData.time.split(':').map(Number);
-    const scheduledTime = new Date(formData.date!);
-    scheduledTime.setHours(hours, minutes, 0, 0);
+    const scheduled_time = new Date(formData.date!);
+    scheduled_time.setHours(hours, minutes, 0, 0);
 
     const reminderData: Partial<Reminder> = {
       ...(reminder?.id && { id: reminder.id }),
       title: formData.title.trim(),
       message: formData.message.trim(),
-      phoneNumber: formData.phoneNumber,
-      scheduledTime,
+      phone_number: formData.phone_number,
+      scheduled_time,
       timezone: formData.timezone,
     };
 
@@ -281,9 +269,9 @@ export function CreateReminderModal({
         {/* Phone Number */}
         <PhoneNumberInput
           label="Phone Number"
-          value={formData.phoneNumber}
-          onChange={(value) => handleFieldChange('phoneNumber', value)}
-          error={touched.phoneNumber ? errors.phoneNumber : undefined}
+          value={formData.phone_number}
+          onChange={(value) => handleFieldChange('phone_number', value)}
+          error={touched.phone_number ? errors.phone_number : undefined}
           required
           disabled={isSaving}
         />

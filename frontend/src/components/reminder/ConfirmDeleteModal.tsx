@@ -30,13 +30,13 @@ export function ConfirmDeleteModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Delete Reminder"
+      title="Cancel Reminder"
       size="sm"
       showCloseButton={!isDeleting}
     >
       <div className="space-y-4">
         <p className="text-sm text-gray-600">
-          Are you sure you want to delete this reminder? This action cannot be undone.
+          Are you sure you want to cancel this reminder? This action cannot be undone.
         </p>
 
         <div className="bg-gray-50 rounded-md p-3 border border-gray-200">
@@ -51,7 +51,7 @@ export function ConfirmDeleteModal({
             disabled={isDeleting}
             className="flex-1"
           >
-            Cancel
+            Go Back
           </Button>
           <Button
             variant="primary"
@@ -60,7 +60,7 @@ export function ConfirmDeleteModal({
             disabled={isDeleting}
             className="flex-1 bg-red-600 hover:bg-red-700 focus-visible:ring-red-600"
           >
-            {isDeleting ? 'Deleting...' : 'Delete'}
+            {isDeleting ? 'Cancelling...' : 'Cancel Reminder'}
           </Button>
         </div>
       </div>

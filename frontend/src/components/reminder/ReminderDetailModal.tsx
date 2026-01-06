@@ -99,14 +99,14 @@ export function ReminderDetailModal({
         {/* Phone Number */}
         <div>
           <h4 className="text-sm font-medium text-gray-700 mb-1">Phone Number</h4>
-          <p className="text-sm text-gray-900">{reminder.phoneNumber}</p>
+          <p className="text-sm text-gray-900">{reminder.phone_number}</p>
         </div>
 
         {/* Date and Time */}
         <div>
           <h4 className="text-sm font-medium text-gray-700 mb-1">Scheduled For</h4>
           <p className="text-sm text-gray-900">
-            {formatDateTime(reminder.scheduledTime, reminder.timezone)}
+            {formatDateTime(reminder.scheduled_time, reminder.timezone)}
           </p>
         </div>
 
@@ -122,7 +122,7 @@ export function ReminderDetailModal({
             Edit
           </Button>
           <Button variant="secondary" onClick={handleDelete} className="flex-1">
-            Delete
+            Cancel Reminder
           </Button>
         </div>
       </div>
