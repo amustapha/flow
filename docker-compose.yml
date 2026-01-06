@@ -68,6 +68,29 @@ services:
       - redis
       - backend
 
+  celery_beat:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: dev
+    container_name: flow-celery-beat
+    command: celery -A app.celery_app beat --loglevel=info
+    volumes:
+      - ./backend:/app
+      - /app/__pycache__
+    environment:
+      - DATABASE_URL=sqlite:///./flow.db
+      - PYTHONUNBUFFERED=1
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - redis
+      - backend
+
   frontend:
     build:
       context: ./frontend
