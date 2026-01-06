@@ -29,6 +29,7 @@ export function RemindersListView({
   // Initialize state from URL parameters
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
+  const [searchInput, setSearchInput] = useState(searchParams.get('search') || '');
   const [statusFilter, setStatusFilter] = useState<string>(searchParams.get('status') || '');
 
   const { reminders, total, isLoading, error } = useReminders({
@@ -38,6 +39,16 @@ export function RemindersListView({
     searchQuery: searchQuery || undefined,
   });
   const { timezone } = useSettings();
+
+  // Debounce search input
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setSearchQuery(searchInput);
+      setCurrentPage(1); // Reset to first page when search changes
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchInput]);
 
   // Update URL when search query or status filter changes
   useEffect(() => {
@@ -73,8 +84,7 @@ export function RemindersListView({
   };
 
   const handleSearchChange = (value: string) => {
-    setSearchQuery(value);
-    setCurrentPage(1); // Reset to first page when searching
+    setSearchInput(value);
   };
 
   const handleStatusFilterChange = (value: string) => {
@@ -83,6 +93,7 @@ export function RemindersListView({
   };
 
   const handleClearSearch = () => {
+    setSearchInput('');
     setSearchQuery('');
     setCurrentPage(1);
   };
@@ -122,11 +133,11 @@ export function RemindersListView({
         <Input
           type="text"
           placeholder="Search reminders..."
-          value={searchQuery}
+          value={searchInput}
           onChange={(e) => handleSearchChange(e.target.value)}
           className="pl-9 pr-9 text-sm"
         />
-        {searchQuery && (
+        {searchInput && (
           <button
             onClick={handleClearSearch}
             className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
