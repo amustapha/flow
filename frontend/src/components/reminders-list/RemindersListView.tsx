@@ -64,7 +64,7 @@ export function RemindersListView({
     }
 
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-  }, [searchQuery, pathname, router, searchParams]);
+  }, [searchQuery, pathname, router]);
 
   const totalPages = Math.ceil(total / pageSize);
 
