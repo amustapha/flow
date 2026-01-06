@@ -1,20 +1,28 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { format } from 'date-fns';
-import { toZonedTime } from 'date-fns-tz';
-import { ChevronLeftIcon, ChevronRightIcon, BellIcon, MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import { useReminders } from '@/hooks';
-import { useSettings } from '@/contexts';
-import { Button, Countdown, Input, StatusBadge } from '@/components/ui';
-import { cn } from '@/lib/utils';
-import { Reminder, ReminderStatus } from '@/types';
-import { StatusFilter } from './StatusFilter';
+import { useState, useEffect } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { format } from "date-fns";
+import { toZonedTime } from "date-fns-tz";
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  BellIcon,
+  MagnifyingGlassIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
+import { useReminders } from "@/hooks";
+import { useSettings } from "@/contexts";
+import { Button, Countdown, Input, StatusBadge } from "@/components/ui";
+import { cn } from "@/lib/utils";
+import { Reminder, ReminderStatus } from "@/types";
+import { StatusFilter } from "./StatusFilter";
 
-const VALID_STATUSES: ReminderStatus[] = ['Scheduled', 'Completed', 'Failed'];
+const VALID_STATUSES: ReminderStatus[] = ["Scheduled", "Completed", "Failed"];
 
-function isValidReminderStatus(status: string | null): status is ReminderStatus {
+function isValidReminderStatus(
+  status: string | null
+): status is ReminderStatus {
   return status !== null && VALID_STATUSES.includes(status as ReminderStatus);
 }
 
@@ -37,12 +45,18 @@ export function RemindersListView({
 
   // Initialize state from URL parameters
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
-  const [searchInput, setSearchInput] = useState(searchParams.get('search') || '');
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get("search") || ""
+  );
+  const [searchInput, setSearchInput] = useState(
+    searchParams.get("search") || ""
+  );
 
   // Read status directly from URL and validate
-  const statusParam = searchParams.get('status');
-  const statusFilter = isValidReminderStatus(statusParam) ? statusParam : undefined;
+  const statusParam = searchParams.get("status");
+  const statusFilter = isValidReminderStatus(statusParam)
+    ? statusParam
+    : undefined;
 
   const { reminders, total, isLoading, error, refetch } = useReminders({
     page: currentPage,
@@ -73,10 +87,10 @@ export function RemindersListView({
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
 
-    if (searchQuery && searchQuery.trim() !== '') {
-      params.set('search', searchQuery);
+    if (searchQuery && searchQuery.trim() !== "") {
+      params.set("search", searchQuery);
     } else {
-      params.delete('search');
+      params.delete("search");
     }
 
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
@@ -101,8 +115,8 @@ export function RemindersListView({
   };
 
   const handleClearSearch = () => {
-    setSearchInput('');
-    setSearchQuery('');
+    setSearchInput("");
+    setSearchQuery("");
     setCurrentPage(1);
   };
 
@@ -160,7 +174,9 @@ export function RemindersListView({
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-purple-100">
             <BellIcon className="h-8 w-8 text-purple-600" />
           </div>
-          <h4 className="mb-2 text-sm font-semibold text-gray-900">No reminders yet</h4>
+          <h4 className="mb-2 text-sm font-semibold text-gray-900">
+            No reminders yet
+          </h4>
           <p className="mb-4 text-xs text-gray-500">
             Get started by creating your first voice reminder
           </p>
@@ -187,8 +203,8 @@ export function RemindersListView({
                 <div
                   key={reminder.id}
                   className={cn(
-                    'cursor-pointer rounded-lg border border-gray-200 bg-white p-3 transition-all hover:border-purple-300 hover:shadow-sm',
-                    isPast && 'opacity-60'
+                    "cursor-pointer rounded-lg border border-gray-200 bg-white p-3 transition-all hover:border-purple-300 hover:shadow-sm",
+                    isPast && "opacity-60"
                   )}
                   onClick={() => onReminderClick?.(reminder)}
                 >
@@ -201,9 +217,15 @@ export function RemindersListView({
                         {reminder.phone_number}
                       </p>
                       <div className="mt-1 flex items-center gap-2 text-xs text-gray-500">
-                        <span>{format(timeInZone, 'MMM d, yyyy h:mm a')}</span>
+                        <span>{format(timeInZone, "MMM d, yyyy h:mm a")}</span>
                         <span className="text-gray-400">•</span>
-                        <Countdown targetDate={reminder.scheduled_time} variant="primary" size="sm" />
+                        {reminder.status === "Scheduled" && (
+                          <Countdown
+                            targetDate={reminder.scheduled_time}
+                            variant="primary"
+                            size="sm"
+                          />
+                        )}
                       </div>
                     </div>
                     {reminder.status && (
