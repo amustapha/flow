@@ -12,7 +12,7 @@ class CallBase(BaseSchema):
 
     reminder_id: UUID = Field(..., examples=["550e8400-e29b-41d4-a716-446655440000"])
     vapi_call_id: Optional[str] = Field(None, examples=["vapi_call_123abc"])
-    status: CallStatus = Field(..., examples=["pending"])
+    status: CallStatus = Field(..., examples=["Scheduled"])
 
 
 class CallCreate(BaseSchema):
@@ -20,14 +20,14 @@ class CallCreate(BaseSchema):
 
     reminder_id: UUID = Field(..., examples=["550e8400-e29b-41d4-a716-446655440000"])
     vapi_call_id: Optional[str] = Field(None, examples=["vapi_call_123abc"])
-    status: CallStatus = Field(CallStatus.PENDING, examples=["pending"])
+    status: CallStatus = Field(CallStatus.SCHEDULED, examples=["Scheduled"])
 
 
 class CallUpdate(BaseSchema):
     """Schema for updating a call (all fields optional)."""
 
     vapi_call_id: Optional[str] = Field(None, examples=["vapi_call_456def"])
-    status: Optional[CallStatus] = Field(None, examples=["completed"])
+    status: Optional[CallStatus] = Field(None, examples=["Completed"])
 
 
 class CallInDB(CallBase, IDMixin, TimestampMixin):

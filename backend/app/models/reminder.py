@@ -16,8 +16,8 @@ class Reminder(TimestampedBase):
     scheduled_time = Column(DateTime(timezone=True), nullable=False)
     timezone = Column(String, nullable=False)
     status = Column(
-        String, default="pending", nullable=False
-    )  # pending, in_progress, completed, failed, cancelled
+        String, default="Scheduled", nullable=False
+    )  # Scheduled, Completed, Failed
 
     # Relationships
     calls = relationship(

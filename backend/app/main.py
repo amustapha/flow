@@ -1,13 +1,26 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from app.api.v1 import api_router
+from app.core.database import create_tables
 from app.core.exceptions import NotFoundError, ValidationError, ConflictError
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Application lifespan events."""
+    # Startup: Create database tables
+    create_tables()
+    yield
+    # Shutdown: cleanup if needed
+
 
 app = FastAPI(
     title="Flow - Call Me Reminder API",
     description="Backend API for Flow reminder application",
     version="0.1.0",
+    lifespan=lifespan,
 )
 
 # Configure CORS

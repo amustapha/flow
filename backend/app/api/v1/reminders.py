@@ -48,7 +48,7 @@ def list_reminders(
     Get a list of reminders with optional filtering and pagination.
 
     Query parameters:
-    - status: Filter by reminder status (pending, in_progress, completed, failed, cancelled)
+    - status: Filter by reminder status (Scheduled, Completed, Failed)
     - date: Filter by scheduled date (YYYY-MM-DD)
     - timezone: Timezone for date filtering (e.g., "America/Los_Angeles")
     - page: Page number (default: 1)

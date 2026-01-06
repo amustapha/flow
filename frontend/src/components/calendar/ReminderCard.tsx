@@ -20,7 +20,7 @@ export function ReminderCard({
   totalOverlaps = 1,
 }: ReminderCardProps) {
   const { timezone } = useSettings();
-  const { title, scheduled_time } = reminder;
+  const { title, scheduled_time, phone_number } = reminder;
 
   // Convert UTC time to selected timezone
   const timeInZone = toZonedTime(scheduled_time, timezone);
@@ -95,10 +95,12 @@ export function ReminderCard({
       onClick={onClick}
     >
       <div className="flex h-full flex-col justify-between">
-        <p className="truncate text-sm font-semibold" title={title}>
-          {title}
-        </p>
-        <p className="text-xs opacity-75">{formatTime(timeInZone)}</p>
+        <div>
+          <p className="truncate text-sm font-semibold" title={title}>
+            {title}
+          </p>
+          <p className="text-xs opacity-75 mt-1">{phone_number}</p>
+        </div>
       </div>
     </div>
   );
