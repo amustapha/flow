@@ -126,6 +126,7 @@ const PhoneNumberInput = forwardRef<HTMLInputElement, PhoneNumberInputProps>(
     useEffect(() => {
       if (value) {
         const phoneNumber = extractPhoneNumber(value, selectedCountry.dialCode);
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setDisplayValue(formatPhoneNumber(phoneNumber, selectedCountry.format));
       } else {
         setDisplayValue('');

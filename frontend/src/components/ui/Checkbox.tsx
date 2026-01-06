@@ -11,7 +11,7 @@ export interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement
 const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
   ({ className, label, indeterminate, id, ...props }, ref) => {
     const internalRef = useRef<HTMLInputElement>(null);
-    const checkboxRef = (ref as any) || internalRef;
+    const checkboxRef = (ref as React.RefObject<HTMLInputElement>) || internalRef;
     const checkboxId = id || label?.toLowerCase().replace(/\s+/g, '-');
 
     useEffect(() => {

@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { cn } from '@/lib/utils';
 
 export interface DayViewGridProps {
   date: Date;
@@ -10,11 +9,9 @@ export interface DayViewGridProps {
 }
 
 export function DayViewGrid({ date, children, onEmptySpaceClick }: DayViewGridProps) {
-  const [currentTime, setCurrentTime] = useState<Date | null>(null);
+  const [currentTime, setCurrentTime] = useState<Date>(new Date());
 
   useEffect(() => {
-    setCurrentTime(new Date());
-
     const interval = setInterval(() => {
       setCurrentTime(new Date());
     }, 60000);

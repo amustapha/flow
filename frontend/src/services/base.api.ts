@@ -87,11 +87,11 @@ export class BaseApiService<TModel, TCreate, TUpdate> {
   /**
    * Build query string from params
    */
-  protected buildQueryString(params: Record<string, any>): string {
+  protected buildQueryString(params: Record<string, unknown>): string {
     const searchParams = new URLSearchParams();
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
-        searchParams.append(key, value.toString());
+        searchParams.append(key, String(value));
       }
     });
     return searchParams.toString();

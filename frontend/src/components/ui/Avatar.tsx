@@ -46,6 +46,7 @@ const Avatar = forwardRef<HTMLImageElement, AvatarProps>(
     return (
       <div className={cn(avatarVariants({ size, className }))}>
         {showImage && (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             ref={ref}
             src={src}

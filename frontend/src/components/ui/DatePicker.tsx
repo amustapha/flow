@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, forwardRef } from 'react';
+import { forwardRef } from 'react';
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react';
 import { CalendarIcon } from '@heroicons/react/24/outline';
 import { Calendar } from './Calendar';
@@ -83,7 +83,7 @@ const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
           </label>
         )}
         <Popover>
-          {({ open, close }) => (
+          {({ close }) => (
             <>
               <PopoverButton
                 ref={ref}
