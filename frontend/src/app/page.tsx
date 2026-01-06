@@ -21,7 +21,7 @@ import { reminderService } from '@/services';
 
 export default function Home() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const { reminders, isLoading, error, refetch } = useReminders(currentDate);
+  const { reminders, isLoading, error, refetch } = useReminders({ date: currentDate });
   const [selectedReminder, setSelectedReminder] = useState<Reminder | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -139,7 +139,7 @@ export default function Home() {
   };
 
   return (
-    <AppLayout sidebar={<Sidebar onCreateReminder={handleCreateReminder} onOpenSettings={handleOpenSettings} />}>
+    <AppLayout sidebar={<Sidebar onCreateReminder={handleCreateReminder} onOpenSettings={handleOpenSettings} onReminderClick={handleReminderClick} />}>
       <div className="flex h-full flex-col">
         <CalendarHeader
           month={MONTH_NAMES[currentDate.getMonth()]}

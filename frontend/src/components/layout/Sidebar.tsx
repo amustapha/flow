@@ -3,15 +3,18 @@
 import { BellIcon } from "@heroicons/react/24/outline";
 import { Calendar, Button } from "@/components/ui";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
+import { RemindersListView } from "@/components/reminders-list";
+import { Reminder } from "@/types";
 
 export interface SidebarProps {
   onCreateReminder?: () => void;
   onOpenSettings?: () => void;
+  onReminderClick?: (reminder: Reminder) => void;
 }
 
-export function Sidebar({ onCreateReminder, onOpenSettings }: SidebarProps) {
+export function Sidebar({ onCreateReminder, onOpenSettings, onReminderClick }: SidebarProps) {
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col pt-16 lg:pt-0">
       {/* Logo/Brand - hidden on mobile */}
       <div className="mb-6 hidden lg:block">
         <h1 className="text-xl font-bold text-purple-600">Flow</h1>
@@ -19,8 +22,13 @@ export function Sidebar({ onCreateReminder, onOpenSettings }: SidebarProps) {
       </div>
 
       {/* Calendar */}
-      <div className="mb-6">
+      <div className="mb-6 hidden lg:block">
         <Calendar />
+      </div>
+
+      {/* Reminders List */}
+      <div className="mb-6 flex-1 overflow-y-auto">
+        <RemindersListView onReminderClick={onReminderClick} />
       </div>
 
       {/* Action Buttons - at bottom */}
