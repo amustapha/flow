@@ -1,8 +1,9 @@
 'use client';
 
-import { differenceInMinutes, format, getHours, getMinutes } from 'date-fns';
+import { differenceInMinutes, getHours, getMinutes } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
 import { cn } from '@/lib/utils';
+import { REMINDER_THRESHOLDS } from '@/lib/constants';
 import { Reminder } from '@/types';
 import { useSettings } from '@/contexts';
 
@@ -29,9 +30,12 @@ export function ReminderCard({
     const now = new Date();
     const minutesDiff = differenceInMinutes(scheduled_time, now);
 
-    if (minutesDiff < -5) {
+    if (minutesDiff < REMINDER_THRESHOLDS.PAST_GRACE_PERIOD) {
       return 'gray';
-    } else if (minutesDiff >= -5 && minutesDiff <= 15) {
+    } else if (
+      minutesDiff >= REMINDER_THRESHOLDS.PAST_GRACE_PERIOD &&
+      minutesDiff <= REMINDER_THRESHOLDS.UPCOMING_WINDOW
+    ) {
       return 'purple';
     } else {
       return 'blue';
@@ -72,10 +76,6 @@ export function ReminderCard({
       width: `${widthPercentage}%`,
       left: `${leftPercentage}%`,
     };
-  };
-
-  const formatTime = (date: Date) => {
-    return format(date, 'h:mm a');
   };
 
   const position = getPosition();

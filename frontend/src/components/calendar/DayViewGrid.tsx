@@ -35,7 +35,7 @@ export function DayViewGrid({ date, children, onEmptySpaceClick }: DayViewGridPr
     const totalMinutes = Math.round(percentageOfDay * 24 * 60);
 
     const hours = Math.floor(totalMinutes / 60);
-    const minutes = Math.floor((totalMinutes % 60) / 15) * 15; // Round to nearest 15 minutes
+    const minutes = Math.floor((totalMinutes % 60) / TIME_GRID.SNAP_INTERVAL_MINUTES) * TIME_GRID.SNAP_INTERVAL_MINUTES;
 
     const clickedTime = new Date(date);
     clickedTime.setHours(hours, minutes, 0, 0);
@@ -52,8 +52,10 @@ export function DayViewGrid({ date, children, onEmptySpaceClick }: DayViewGridPr
     return `${hour - 12} PM`;
   };
 
+  const isCurrentDay = isTodayInTimezone(date, timezone);
+
   const getCurrentTimePosition = () => {
-    if (!currentTime || !isToday()) return null;
+    if (!currentTime || !isCurrentDay) return null;
 
     // Convert current time to selected timezone
     const timeInZone = toZonedTime(currentTime, timezone);
@@ -63,16 +65,6 @@ export function DayViewGrid({ date, children, onEmptySpaceClick }: DayViewGridPr
     const percentageOfDay = (totalMinutes / (24 * 60)) * 100;
 
     return percentageOfDay;
-  };
-
-  const isToday = () => {
-    // Convert current time to selected timezone for comparison
-    const todayInZone = toZonedTime(new Date(), timezone);
-    return (
-      date.getDate() === todayInZone.getDate() &&
-      date.getMonth() === todayInZone.getMonth() &&
-      date.getFullYear() === todayInZone.getFullYear()
-    );
   };
 
   const currentTimePosition = getCurrentTimePosition();
