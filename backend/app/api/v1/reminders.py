@@ -13,6 +13,12 @@ from app.schemas.reminder import (
     ReminderResponse,
     ReminderListResponse,
 )
+from app.core.constants import (
+    DEFAULT_PAGE,
+    DEFAULT_PAGE_SIZE,
+    MAX_PAGE_SIZE,
+    MIN_PAGE_SIZE,
+)
 
 router = APIRouter()
 
@@ -41,8 +47,8 @@ def list_reminders(
     status_filter: Optional[ReminderStatus] = Query(None, alias="status"),
     date_filter: Optional[date] = Query(None, alias="date"),
     timezone_filter: Optional[str] = Query(None, alias="timezone"),
-    page: int = Query(1, ge=1),
-    page_size: int = Query(50, ge=1, le=100),
+    page: int = Query(DEFAULT_PAGE, ge=MIN_PAGE_SIZE),
+    page_size: int = Query(DEFAULT_PAGE_SIZE, ge=MIN_PAGE_SIZE, le=MAX_PAGE_SIZE),
     service: ReminderService = Depends(get_reminder_service),
 ):
     """
