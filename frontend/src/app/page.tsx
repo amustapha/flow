@@ -16,10 +16,11 @@ import {
 import { useReminders } from '@/hooks';
 import { Reminder } from '@/types';
 import { MONTH_NAMES } from '@/lib/constants';
+import { reminderService } from '@/services';
 
 export default function Home() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const { reminders, isLoading, error } = useReminders(currentDate);
+  const { reminders, isLoading, error, refetch } = useReminders(currentDate);
   const [selectedReminder, setSelectedReminder] = useState<Reminder | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -69,11 +70,16 @@ export default function Home() {
     setIsDeleteModalOpen(true);
   };
 
-  const handleConfirmDelete = (reminder: Reminder) => {
-    console.log('Confirmed delete reminder:', reminder);
-    setIsDeleteModalOpen(false);
-    setReminderToDelete(null);
-    // TODO: Implement actual delete functionality with API call
+  const handleConfirmDelete = async (reminder: Reminder) => {
+    try {
+      await reminderService.delete(reminder.id);
+      setIsDeleteModalOpen(false);
+      setReminderToDelete(null);
+      refetch();
+    } catch (err) {
+      console.error('Failed to delete reminder:', err);
+      // TODO: Show error toast/notification
+    }
   };
 
   const handleCloseDeleteModal = () => {
@@ -81,11 +87,22 @@ export default function Home() {
     setReminderToDelete(null);
   };
 
-  const handleSaveReminder = (reminderData: Partial<Reminder>) => {
-    console.log('Save reminder:', reminderData);
-    setIsCreateModalOpen(false);
-    setReminderToEdit(null);
-    // TODO: Implement save functionality
+  const handleSaveReminder = async (reminderData: Partial<Reminder>) => {
+    try {
+      if (reminderToEdit) {
+        // Update existing reminder
+        await reminderService.update(reminderToEdit.id, reminderData);
+      } else {
+        // Create new reminder
+        await reminderService.create(reminderData as any);
+      }
+      setIsCreateModalOpen(false);
+      setReminderToEdit(null);
+      refetch();
+    } catch (err) {
+      console.error('Failed to save reminder:', err);
+      // TODO: Show error toast/notification
+    }
   };
 
   const handleCloseDetailModal = () => {

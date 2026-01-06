@@ -8,6 +8,7 @@ export function useReminders(date: Date) {
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const [refetchTrigger, setRefetchTrigger] = useState(0);
 
   useEffect(() => {
     const fetchReminders = async () => {
@@ -38,7 +39,9 @@ export function useReminders(date: Date) {
     };
 
     fetchReminders();
-  }, [date]);
+  }, [date, refetchTrigger]);
 
-  return { reminders, isLoading, error };
+  const refetch = () => setRefetchTrigger((prev) => prev + 1);
+
+  return { reminders, isLoading, error, refetch };
 }
