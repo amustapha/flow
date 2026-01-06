@@ -26,6 +26,12 @@ celery_app.conf.update(
     worker_max_tasks_per_child=1000,
     task_default_retry_delay=60,
     task_max_retries=3,
+    beat_schedule={
+        "process-scheduled-reminders": {
+            "task": "app.tasks.process_scheduled_reminders",
+            "schedule": 60.0,
+        },
+    },
 )
 
 logger.info("Celery app initialized")
