@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { ClockIcon } from '@heroicons/react/24/outline';
 import { Badge } from './Badge';
 
@@ -18,33 +18,63 @@ export function Countdown({
   className
 }: CountdownProps) {
   const [timeLeft, setTimeLeft] = useState<string>('');
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const calculateTimeLeft = useCallback(() => {
+    const now = new Date();
+    const difference = targetDate.getTime() - now.getTime();
+
+    if (difference <= 0) {
+      setTimeLeft('00:00:00');
+      return;
+    }
+
+    const hours = Math.floor(difference / (1000 * 60 * 60));
+    const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+    const formattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    setTimeLeft(formattedTime);
+  }, [targetDate]);
 
   useEffect(() => {
-    const calculateTimeLeft = () => {
-      const now = new Date();
-      const difference = targetDate.getTime() - now.getTime();
-
-      if (difference <= 0) {
-        setTimeLeft('00:00:00');
-        return;
+    const startInterval = () => {
+      if (!intervalRef.current) {
+        intervalRef.current = setInterval(calculateTimeLeft, 1000);
       }
+    };
 
-      const hours = Math.floor(difference / (1000 * 60 * 60));
-      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+    const stopInterval = () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
 
-      const formattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-      setTimeLeft(formattedTime);
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopInterval();
+      } else {
+        calculateTimeLeft();
+        startInterval();
+      }
     };
 
     // Calculate immediately
     calculateTimeLeft();
 
-    // Update every second
-    const interval = setInterval(calculateTimeLeft, 1000);
+    // Start interval only if page is visible
+    if (!document.hidden) {
+      startInterval();
+    }
 
-    return () => clearInterval(interval);
-  }, [targetDate]);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      stopInterval();
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [calculateTimeLeft]);
 
   const iconSize = size === 'sm' ? 'h-3 w-3' : size === 'lg' ? 'h-5 w-5' : 'h-4 w-4';
 
