@@ -162,21 +162,21 @@ export function RemindersListView({
           All
         </button>
         <button
-          onClick={() => handleStatusFilterChange('pending')}
+          onClick={() => handleStatusFilterChange('Scheduled')}
           className={cn(
             'rounded-full px-3 py-1 text-xs font-medium transition-colors',
-            statusFilter === 'pending'
+            statusFilter === 'Scheduled'
               ? 'bg-purple-600 text-white'
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
           )}
         >
-          Pending
+          Scheduled
         </button>
         <button
-          onClick={() => handleStatusFilterChange('completed')}
+          onClick={() => handleStatusFilterChange('Completed')}
           className={cn(
             'rounded-full px-3 py-1 text-xs font-medium transition-colors',
-            statusFilter === 'completed'
+            statusFilter === 'Completed'
               ? 'bg-purple-600 text-white'
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
           )}
@@ -184,15 +184,15 @@ export function RemindersListView({
           Completed
         </button>
         <button
-          onClick={() => handleStatusFilterChange('cancelled')}
+          onClick={() => handleStatusFilterChange('Failed')}
           className={cn(
             'rounded-full px-3 py-1 text-xs font-medium transition-colors',
-            statusFilter === 'cancelled'
+            statusFilter === 'Failed'
               ? 'bg-purple-600 text-white'
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
           )}
         >
-          Cancelled
+          Failed
         </button>
       </div>
 
