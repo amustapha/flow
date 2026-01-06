@@ -10,14 +10,75 @@ services:
     environment:
       - DATABASE_URL=sqlite:///./flow.db
       - PYTHONUNBUFFERED=1
+      - ENV=production
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
     env_file:
       - ./backend/.env
+    depends_on:
+      - redis
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
+
+  redis:
+    image: redis:7-alpine
+    container_name: flow-redis-prod
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  celery_worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: prod
+    container_name: flow-celery-worker-prod
+    command: celery -A app.celery_app worker --loglevel=info
+    environment:
+      - DATABASE_URL=sqlite:///./flow.db
+      - PYTHONUNBUFFERED=1
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - redis
+      - backend
+    restart: unless-stopped
+
+  celery_beat:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: prod
+    container_name: flow-celery-beat-prod
+    command: celery -A app.celery_app beat --loglevel=info
+    environment:
+      - DATABASE_URL=sqlite:///./flow.db
+      - PYTHONUNBUFFERED=1
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - redis
+      - backend
+    restart: unless-stopped
 
   frontend:
     build:
@@ -35,3 +96,4 @@ services:
 
 volumes:
   backend_data:
+  redis_data:
