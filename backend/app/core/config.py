@@ -1,4 +1,4 @@
-from pydantic import field_validator
+from pydantic import computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -8,14 +8,12 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "sqlite:///./flow.db"
 
     # CORS Configuration - comma-separated list of origins
-    CORS_ORIGINS: list[str] = ["http://localhost:3000"]
+    CORS_ORIGINS_STR: str = "http://localhost:3000"
 
-    @field_validator("CORS_ORIGINS", mode="before")
-    @classmethod
-    def parse_cors_origins(cls, v):
-        if isinstance(v, str):
-            return [origin.strip() for origin in v.split(",") if origin.strip()]
-        return v
+    @computed_field
+    @property
+    def CORS_ORIGINS(self) -> list[str]:
+        return [origin.strip() for origin in self.CORS_ORIGINS_STR.split(",") if origin.strip()]
 
     # Vapi Configuration
     VAPI_API_KEY: str = ""
