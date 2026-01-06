@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     # Vapi Configuration
     VAPI_API_KEY: str = ""
     VAPI_API_URL: str = "https://api.vapi.ai"
+    VAPI_PHONE_NUMBER_ID: str = ""  # ID of Twilio number imported into Vapi
 
     # Twilio Configuration
     TWILIO_ACCOUNT_SID: str = ""
