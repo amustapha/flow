@@ -5,3 +5,4 @@ export * from "./layout";
 export * from "./reminder";
 export * from "./settings";
 export * from "./reminders-list";
+export * from "./ErrorBoundary";
