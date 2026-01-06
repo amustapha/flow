@@ -15,6 +15,7 @@ class ReminderService extends BaseApiService<Reminder, ReminderCreate, ReminderU
   async list(params?: {
     status?: string;
     date?: string;
+    timezone?: string;
     page?: number;
     page_size?: number;
   }): Promise<ReminderListResponse> {

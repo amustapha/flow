@@ -1,9 +1,10 @@
 """Service layer for Reminder business logic."""
 
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from typing import Optional
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
+import pytz
 from app.models.reminder import Reminder
 from app.schemas.reminder import ReminderCreate, ReminderUpdate
 from app.services.base import BaseService
@@ -20,6 +21,7 @@ class ReminderService(BaseService[Reminder, ReminderCreate, ReminderUpdate]):
         self,
         status: Optional[str] = None,
         filter_date: Optional[date] = None,
+        timezone: Optional[str] = None,
         skip: int = 0,
         limit: int = 50,
     ) -> tuple[list[Reminder], int]:
@@ -31,14 +33,35 @@ class ReminderService(BaseService[Reminder, ReminderCreate, ReminderUpdate]):
             query = query.filter(Reminder.status == status)
 
         if filter_date:
-            # Filter by date (ignoring time component)
-            next_day = filter_date + timedelta(days=1)
-            query = query.filter(
-                and_(
-                    Reminder.scheduled_time >= filter_date,
-                    Reminder.scheduled_time < next_day,
+            if timezone:
+                # Convert the date to UTC range based on the provided timezone
+                tz = pytz.timezone(timezone)
+
+                # Create datetime at start of day in user's timezone
+                local_start = tz.localize(datetime.combine(filter_date, datetime.min.time()))
+
+                # Create datetime at end of day in user's timezone
+                local_end = tz.localize(datetime.combine(filter_date, datetime.max.time()))
+
+                # Convert to UTC
+                utc_start = local_start.astimezone(pytz.UTC)
+                utc_end = local_end.astimezone(pytz.UTC)
+
+                query = query.filter(
+                    and_(
+                        Reminder.scheduled_time >= utc_start,
+                        Reminder.scheduled_time <= utc_end,
+                    )
                 )
-            )
+            else:
+                # Filter by date in UTC (legacy behavior)
+                next_day = filter_date + timedelta(days=1)
+                query = query.filter(
+                    and_(
+                        Reminder.scheduled_time >= filter_date,
+                        Reminder.scheduled_time < next_day,
+                    )
+                )
 
         # Get total count
         total = query.count()
