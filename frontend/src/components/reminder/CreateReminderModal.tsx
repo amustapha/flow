@@ -101,12 +101,16 @@ export function CreateReminderModal({
       },
       date: () => {
         if (!data.date) return 'Date is required';
-        if (data.time && !isFutureDateTime(data.date, data.time)) return 'Date and time must be in the future';
+        if (data.time && !isFutureDateTime(data.date, data.time, data.timezone)) {
+          return 'Date and time must be in the future';
+        }
         return undefined;
       },
       time: () => {
         if (!isNonEmptyString(data.time)) return 'Time is required';
-        if (data.date && !isFutureDateTime(data.date, data.time)) return 'Date and time must be in the future';
+        if (data.date && !isFutureDateTime(data.date, data.time, data.timezone)) {
+          return 'Date and time must be in the future';
+        }
         return undefined;
       },
       timezone: () => {
@@ -140,7 +144,8 @@ export function CreateReminderModal({
     }
 
     // Re-validate date/time if the other changes (they depend on each other)
-    if (name === 'date' || name === 'time') {
+    // Also re-validate if timezone changes, since future validation is timezone-aware
+    if (name === 'date' || name === 'time' || name === 'timezone') {
       setErrors((prev) => ({
         ...prev,
         date: validateField('date', newFormData),

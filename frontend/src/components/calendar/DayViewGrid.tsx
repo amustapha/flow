@@ -17,6 +17,7 @@ export function DayViewGrid({ date, children, onEmptySpaceClick }: DayViewGridPr
 
   useEffect(() => {
     // Set initial time on client only to avoid hydration mismatch
+    // We get the current system time (UTC-based) and will convert to timezone later
     setCurrentTime(new Date());
 
     const interval = setInterval(() => {
@@ -24,7 +25,7 @@ export function DayViewGrid({ date, children, onEmptySpaceClick }: DayViewGridPr
     }, 60000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, []); // Intentionally no timezone dependency - we always want actual current time
 
   const handleGridClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!onEmptySpaceClick) return;

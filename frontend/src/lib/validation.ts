@@ -30,12 +30,13 @@ export function isFutureDate(date: Date): boolean {
 }
 
 /**
- * Validates a date and time combination is in the future
- * @param date - The date to validate
- * @param time - The time string in HH:MM format
- * @returns true if the combined date/time is in the future
+ * Validates a date and time combination is in the future (timezone-aware)
+ * @param date - The date to validate (in the user's selected timezone)
+ * @param time - The time string in HH:MM format (in the user's selected timezone)
+ * @param timezone - The timezone to use for validation (defaults to system timezone)
+ * @returns true if the combined date/time is in the future in the specified timezone
  */
-export function isFutureDateTime(date: Date, time: string): boolean {
+export function isFutureDateTime(date: Date, time: string, timezone?: string): boolean {
   if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
     return false;
   }
@@ -51,12 +52,49 @@ export function isFutureDateTime(date: Date, time: string): boolean {
     return false;
   }
 
-  // Create a new date with the specified time
-  const dateTime = new Date(date);
-  dateTime.setHours(hours, minutes, 0, 0);
-
+  // Get the current time in the specified timezone
   const now = new Date();
-  return dateTime.getTime() > now.getTime();
+  let currentTimeInZone: Date;
+
+  if (timezone) {
+    // Convert current UTC time to the specified timezone
+    // This gives us what "now" is in the user's timezone
+    try {
+      const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: timezone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+      });
+
+      const parts = formatter.formatToParts(now);
+      const getValue = (type: string) => parts.find(p => p.type === type)?.value || '0';
+
+      currentTimeInZone = new Date(
+        parseInt(getValue('year')),
+        parseInt(getValue('month')) - 1,
+        parseInt(getValue('day')),
+        parseInt(getValue('hour')),
+        parseInt(getValue('minute')),
+        parseInt(getValue('second'))
+      );
+    } catch {
+      // Fallback to system time if timezone is invalid
+      currentTimeInZone = now;
+    }
+  } else {
+    currentTimeInZone = now;
+  }
+
+  // Create the selected datetime in the same timezone representation
+  const selectedDateTime = new Date(date);
+  selectedDateTime.setHours(hours, minutes, 0, 0);
+
+  return selectedDateTime.getTime() > currentTimeInZone.getTime();
 }
 
 /**
