@@ -66,6 +66,13 @@ export function RemindersListView({
   });
   const { timezone } = useSettings();
 
+  // Track current time on client only to avoid hydration mismatch
+  const [now, setNow] = useState<Date | null>(null);
+
+  useEffect(() => {
+    setNow(new Date());
+  }, [reminders]); // Update when reminders change
+
   // Refetch when external trigger changes
   useEffect(() => {
     if (refetchTrigger > 0) {
@@ -197,7 +204,7 @@ export function RemindersListView({
           <div className="space-y-2">
             {reminders.map((reminder) => {
               const timeInZone = toZonedTime(reminder.scheduled_time, timezone);
-              const isPast = new Date() > reminder.scheduled_time;
+              const isPast = now ? now > reminder.scheduled_time : false;
 
               return (
                 <div

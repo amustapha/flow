@@ -13,9 +13,12 @@ export interface DayViewGridProps {
 
 export function DayViewGrid({ date, children, onEmptySpaceClick }: DayViewGridProps) {
   const { timezone } = useSettings();
-  const [currentTime, setCurrentTime] = useState<Date>(new Date());
+  const [currentTime, setCurrentTime] = useState<Date | null>(null);
 
   useEffect(() => {
+    // Set initial time on client only to avoid hydration mismatch
+    setCurrentTime(new Date());
+
     const interval = setInterval(() => {
       setCurrentTime(new Date());
     }, 60000);

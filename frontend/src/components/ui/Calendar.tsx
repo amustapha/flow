@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
 import { MONTH_NAMES, DAY_NAMES_ABBREV } from '@/lib/constants';
@@ -21,14 +21,25 @@ export interface CalendarProps {
 }
 
 export function Calendar({ initialDate, onDateSelect, className }: CalendarProps) {
-  const [currentDate, setCurrentDate] = useState(initialDate || new Date());
+  const [currentDate, setCurrentDate] = useState<Date | null>(null);
+  const [today, setToday] = useState<Date | null>(null);
+
+  // Initialize dates on client only to avoid hydration mismatch
+  useEffect(() => {
+    setCurrentDate(initialDate || new Date());
+    setToday(new Date());
+  }, [initialDate]);
+
+  // Show nothing during SSR to avoid hydration mismatch
+  if (!currentDate) {
+    return <div className={cn('h-[280px]', className)} />;
+  }
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const today = new Date();
 
   const previousMonth = () => {
     setCurrentDate(new Date(year, month - 1));
@@ -53,7 +64,8 @@ export function Calendar({ initialDate, onDateSelect, className }: CalendarProps
 
     // Days of the month
     for (let day = 1; day <= daysInMonth; day++) {
-      const isToday = today.getDate() === day &&
+      const isToday = today !== null &&
+                      today.getDate() === day &&
                       today.getMonth() === month &&
                       today.getFullYear() === year;
 

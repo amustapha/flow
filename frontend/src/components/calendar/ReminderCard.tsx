@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { differenceInMinutes, getHours, getMinutes } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
 import { cn } from '@/lib/utils';
@@ -26,23 +27,28 @@ export function ReminderCard({
   // Convert UTC time to selected timezone
   const timeInZone = toZonedTime(scheduled_time, timezone);
 
-  const getColor = () => {
-    const now = new Date();
-    const minutesDiff = differenceInMinutes(scheduled_time, now);
+  // Use stable default color for SSR, calculate actual color on client
+  const [color, setColor] = useState<'gray' | 'purple' | 'blue'>('blue');
 
-    if (minutesDiff < REMINDER_THRESHOLDS.PAST_GRACE_PERIOD) {
-      return 'gray';
-    } else if (
-      minutesDiff >= REMINDER_THRESHOLDS.PAST_GRACE_PERIOD &&
-      minutesDiff <= REMINDER_THRESHOLDS.UPCOMING_WINDOW
-    ) {
-      return 'purple';
-    } else {
-      return 'blue';
-    }
-  };
+  useEffect(() => {
+    const calculateColor = () => {
+      const now = new Date();
+      const minutesDiff = differenceInMinutes(scheduled_time, now);
 
-  const color = getColor();
+      if (minutesDiff < REMINDER_THRESHOLDS.PAST_GRACE_PERIOD) {
+        return 'gray';
+      } else if (
+        minutesDiff >= REMINDER_THRESHOLDS.PAST_GRACE_PERIOD &&
+        minutesDiff <= REMINDER_THRESHOLDS.UPCOMING_WINDOW
+      ) {
+        return 'purple';
+      } else {
+        return 'blue';
+      }
+    };
+
+    setColor(calculateColor());
+  }, [scheduled_time]);
 
   const colorClasses = {
     gray: 'bg-gray-100 border-gray-400 text-gray-900 hover:bg-gray-200',
