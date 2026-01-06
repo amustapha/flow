@@ -131,10 +131,10 @@ def initiate_vapi_call(self, call_id: str) -> dict:
         raise self.retry(exc=e, countdown=60)
 
 
-@celery_app.task(name="app.tasks.update_call_status")
-def update_call_status(call_id: str, status: str) -> dict:
+@celery_app.task(base=DatabaseTask, bind=True, name="app.tasks.update_call_status")
+def update_call_status(self, call_id: str, status: str) -> dict:
     """Update call status from VAPI webhooks."""
-    db = SessionLocal()
+    db = self.get_db()
     call_service = CallService(db)
 
     try:
@@ -167,19 +167,16 @@ def update_call_status(call_id: str, status: str) -> dict:
         logger.error(f"Error updating call status: {str(e)}", exc_info=True)
         raise
 
-    finally:
-        db.close()
 
-
-@celery_app.task(name="app.tasks.process_scheduled_reminders")
-def process_scheduled_reminders() -> dict:
+@celery_app.task(base=DatabaseTask, bind=True, name="app.tasks.process_scheduled_reminders")
+def process_scheduled_reminders(self) -> dict:
     """Process reminders that are due for calling."""
-    db = SessionLocal()
+    db = self.get_db()
 
     try:
         # Use naive UTC datetime for SQLite compatibility
         # SQLite stores datetimes as strings without timezone info
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
 
         due_reminders = (
             db.query(Reminder)
@@ -233,14 +230,11 @@ def process_scheduled_reminders() -> dict:
         logger.error(f"Error in process_scheduled_reminders: {str(e)}", exc_info=True)
         raise
 
-    finally:
-        db.close()
 
-
-@celery_app.task(name="app.tasks.cleanup_in_progress_calls")
-def cleanup_in_progress_calls() -> dict:
+@celery_app.task(base=DatabaseTask, bind=True, name="app.tasks.cleanup_in_progress_calls")
+def cleanup_in_progress_calls(self) -> dict:
     """Check and update status of in-progress calls from Vapi."""
-    db = SessionLocal()
+    db = self.get_db()
 
     try:
         # Find all calls with in_progress status
@@ -257,6 +251,7 @@ def cleanup_in_progress_calls() -> dict:
         failed_count = 0
 
         vapi_client = VapiClient()
+        reminder_service = ReminderService(db)
 
         for call in in_progress_calls:
             try:
@@ -286,6 +281,15 @@ def cleanup_in_progress_calls() -> dict:
                     updated_count += 1
                     logger.info(f"Updated call {call.id} to {new_status} (reason: {ended_reason})")
 
+                    # Update reminder status to match call status
+                    reminder_status = (
+                        ReminderStatus.COMPLETED
+                        if new_status == CallStatus.COMPLETED
+                        else ReminderStatus.FAILED
+                    )
+                    reminder_service.update(call.reminder_id, {"status": reminder_status})
+                    logger.info(f"Updated reminder {call.reminder_id} status to {reminder_status}")
+
             except Exception as e:
                 failed_count += 1
                 logger.error(f"Error checking call {call.id}: {str(e)}", exc_info=True)
@@ -300,6 +304,3 @@ def cleanup_in_progress_calls() -> dict:
     except Exception as e:
         logger.error(f"Error in cleanup_in_progress_calls: {str(e)}", exc_info=True)
         raise
-
-    finally:
-        db.close()
