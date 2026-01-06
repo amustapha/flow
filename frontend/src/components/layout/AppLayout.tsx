@@ -20,7 +20,7 @@ export function AppLayout({ children, sidebar }: AppLayoutProps) {
       {/* Sidebar - always visible on desktop, toggle on mobile */}
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-30 w-96 bg-white shadow-lg lg:block',
+          'fixed inset-y-0 left-0 z-30 w-full lg:w-96 bg-white shadow-lg lg:block',
           showSidebar ? 'block' : 'hidden'
         )}
       >
