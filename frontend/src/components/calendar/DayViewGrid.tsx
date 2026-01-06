@@ -6,9 +6,10 @@ import { cn } from '@/lib/utils';
 export interface DayViewGridProps {
   date: Date;
   children?: React.ReactNode;
+  onEmptySpaceClick?: (time: Date) => void;
 }
 
-export function DayViewGrid({ date, children }: DayViewGridProps) {
+export function DayViewGrid({ date, children, onEmptySpaceClick }: DayViewGridProps) {
   const [currentTime, setCurrentTime] = useState<Date | null>(null);
 
   useEffect(() => {
@@ -20,6 +21,26 @@ export function DayViewGrid({ date, children }: DayViewGridProps) {
 
     return () => clearInterval(interval);
   }, []);
+
+  const handleGridClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!onEmptySpaceClick) return;
+
+    // Only trigger if clicking on the grid itself, not on child elements
+    if (e.target !== e.currentTarget) return;
+
+    const rect = e.currentTarget.getBoundingClientRect();
+    const y = e.clientY - rect.top;
+    const percentageOfDay = y / rect.height;
+    const totalMinutes = Math.round(percentageOfDay * 24 * 60);
+
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = Math.floor((totalMinutes % 60) / 15) * 15; // Round to nearest 15 minutes
+
+    const clickedTime = new Date(date);
+    clickedTime.setHours(hours, minutes, 0, 0);
+
+    onEmptySpaceClick(clickedTime);
+  };
 
   const hours = Array.from({ length: 24 }, (_, i) => i);
 
@@ -83,7 +104,10 @@ export function DayViewGrid({ date, children }: DayViewGridProps) {
             </div>
           )}
 
-          <div className="absolute left-20 right-0 top-0 bottom-0">
+          <div
+            className="absolute left-20 right-0 top-0 bottom-0 cursor-pointer"
+            onClick={handleGridClick}
+          >
             {children}
           </div>
         </div>

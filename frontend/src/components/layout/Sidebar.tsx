@@ -1,8 +1,12 @@
 'use client';
 
-import { Avatar, Calendar } from '@/components/ui';
+import { Calendar, Button } from '@/components/ui';
 
-export function Sidebar() {
+export interface SidebarProps {
+  onCreateReminder?: () => void;
+}
+
+export function Sidebar({ onCreateReminder }: SidebarProps) {
 
   return (
     <div className="flex h-full flex-col">
@@ -17,30 +21,15 @@ export function Sidebar() {
         <Calendar />
       </div>
 
-      {/* User Avatars - at bottom */}
+      {/* Create Reminder Button - at bottom */}
       <div className="mt-auto border-t border-gray-200 pt-4">
-        <div className="flex items-center gap-2">
-          <Avatar
-            src="https://api.dicebear.com/7.x/avataaars/svg?seed=1"
-            alt="User 1"
-            size="sm"
-          />
-          <Avatar
-            src="https://api.dicebear.com/7.x/avataaars/svg?seed=2"
-            alt="User 2"
-            size="sm"
-          />
-          <Avatar
-            src="https://api.dicebear.com/7.x/avataaars/svg?seed=3"
-            alt="User 3"
-            size="sm"
-          />
-          <Avatar
-            src="https://api.dicebear.com/7.x/avataaars/svg?seed=4"
-            alt="User 4"
-            size="sm"
-          />
-        </div>
+        <Button
+          variant="primary"
+          onClick={onCreateReminder}
+          className="w-full"
+        >
+          + Create Reminder
+        </Button>
       </div>
     </div>
   );

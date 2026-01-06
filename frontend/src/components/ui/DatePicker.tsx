@@ -60,7 +60,6 @@ const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
     },
     ref
   ) => {
-    const [isOpen, setIsOpen] = useState(false);
     const inputId = id || label?.toLowerCase().replace(/\s+/g, '-');
 
     const formatDate = (date: Date | undefined): string => {
@@ -70,11 +69,6 @@ const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
         month: 'long',
         day: 'numeric',
       });
-    };
-
-    const handleDateSelect = (date: Date) => {
-      onChange?.(date);
-      setIsOpen(false);
     };
 
     return (
@@ -89,7 +83,7 @@ const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
           </label>
         )}
         <Popover>
-          {({ open }) => (
+          {({ open, close }) => (
             <>
               <PopoverButton
                 ref={ref}
@@ -115,7 +109,10 @@ const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
               >
                 <Calendar
                   initialDate={value}
-                  onDateSelect={handleDateSelect}
+                  onDateSelect={(date) => {
+                    onChange?.(date);
+                    close();
+                  }}
                 />
               </PopoverPanel>
             </>
