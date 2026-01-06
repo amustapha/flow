@@ -29,11 +29,11 @@ celery_app.conf.update(
     beat_schedule={
         "process-scheduled-reminders": {
             "task": "app.tasks.process_scheduled_reminders",
-            "schedule": 60.0,
+            "schedule": 10.0,
         },
         "cleanup-in-progress-calls": {
             "task": "app.tasks.cleanup_in_progress_calls",
-            "schedule": 120.0,
+            "schedule": 30.0,
         },
     },
 )
