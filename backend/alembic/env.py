@@ -7,7 +7,7 @@ from alembic import context
 
 # Import the Base and all models
 from app.core.database import Base
-from app.models import user, calendar, category, event, reminder
+from app.models import base, reminder, call
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

@@ -1,5 +1,6 @@
 'use client';
 
+import { differenceInMinutes, format, getHours, getMinutes } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Reminder } from '@/types';
 
@@ -16,11 +17,10 @@ export function ReminderCard({
   overlapIndex = 0,
   totalOverlaps = 1,
 }: ReminderCardProps) {
-  const { title, scheduledTime: time } = reminder;
+  const { title, scheduled_time: time } = reminder;
   const getColor = () => {
     const now = new Date();
-    const timeDiff = time.getTime() - now.getTime();
-    const minutesDiff = timeDiff / (1000 * 60);
+    const minutesDiff = differenceInMinutes(time, now);
 
     if (minutesDiff < -5) {
       return 'gray';
@@ -40,8 +40,8 @@ export function ReminderCard({
   };
 
   const getPosition = () => {
-    const hours = time.getHours();
-    const minutes = time.getMinutes();
+    const hours = getHours(time);
+    const minutes = getMinutes(time);
     const totalMinutes = hours * 60 + minutes;
     const topPercentage = (totalMinutes / (24 * 60)) * 100;
 
@@ -68,13 +68,7 @@ export function ReminderCard({
   };
 
   const formatTime = (date: Date) => {
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
-    const period = hours >= 12 ? 'PM' : 'AM';
-    const displayHours = hours % 12 || 12;
-    const displayMinutes = minutes.toString().padStart(2, '0');
-
-    return `${displayHours}:${displayMinutes} ${period}`;
+    return format(date, 'h:mm a');
   };
 
   const position = getPosition();

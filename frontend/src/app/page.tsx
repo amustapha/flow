@@ -14,11 +14,13 @@ import {
   ConfirmDeleteModal,
 } from '@/components/reminder';
 import { useReminders } from '@/hooks';
-import { Reminder } from '@/types';
+import { Reminder, ReminderCreate, ReminderUpdate } from '@/types';
+import { MONTH_NAMES } from '@/lib/constants';
+import { reminderService } from '@/services';
 
 export default function Home() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const { reminders, isLoading } = useReminders(currentDate);
+  const { reminders, isLoading, error, refetch } = useReminders(currentDate);
   const [selectedReminder, setSelectedReminder] = useState<Reminder | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -26,11 +28,6 @@ export default function Home() {
   const [reminderToEdit, setReminderToEdit] = useState<Reminder | null>(null);
   const [reminderToDelete, setReminderToDelete] = useState<Reminder | null>(null);
   const [initialDateTime, setInitialDateTime] = useState<Date | undefined>(undefined);
-
-  const monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
-  ];
 
   const handlePreviousMonth = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1));
@@ -73,11 +70,16 @@ export default function Home() {
     setIsDeleteModalOpen(true);
   };
 
-  const handleConfirmDelete = (reminder: Reminder) => {
-    console.log('Confirmed delete reminder:', reminder);
-    setIsDeleteModalOpen(false);
-    setReminderToDelete(null);
-    // TODO: Implement actual delete functionality with API call
+  const handleConfirmDelete = async (reminder: Reminder) => {
+    try {
+      await reminderService.delete(reminder.id);
+      setIsDeleteModalOpen(false);
+      setReminderToDelete(null);
+      refetch();
+    } catch (err) {
+      console.error('Failed to delete reminder:', err);
+      // TODO: Show error toast/notification
+    }
   };
 
   const handleCloseDeleteModal = () => {
@@ -85,11 +87,22 @@ export default function Home() {
     setReminderToDelete(null);
   };
 
-  const handleSaveReminder = (reminderData: Partial<Reminder>) => {
-    console.log('Save reminder:', reminderData);
-    setIsCreateModalOpen(false);
-    setReminderToEdit(null);
-    // TODO: Implement save functionality
+  const handleSaveReminder = async (reminderData: ReminderCreate | ReminderUpdate) => {
+    try {
+      if (reminderToEdit) {
+        // Update existing reminder
+        await reminderService.update(reminderToEdit.id, reminderData as ReminderUpdate);
+      } else {
+        // Create new reminder
+        await reminderService.create(reminderData as ReminderCreate);
+      }
+      setIsCreateModalOpen(false);
+      setReminderToEdit(null);
+      refetch();
+    } catch (err) {
+      console.error('Failed to save reminder:', err);
+      // TODO: Show error toast/notification
+    }
   };
 
   const handleCloseDetailModal = () => {
@@ -119,7 +132,7 @@ export default function Home() {
     <AppLayout sidebar={<Sidebar onCreateReminder={handleCreateReminder} />}>
       <div className="flex h-full flex-col">
         <CalendarHeader
-          month={monthNames[currentDate.getMonth()]}
+          month={MONTH_NAMES[currentDate.getMonth()]}
           year={currentDate.getFullYear()}
           onPreviousMonth={handlePreviousMonth}
           onNextMonth={handleNextMonth}
@@ -135,7 +148,15 @@ export default function Home() {
         </div>
 
         <DayViewGrid date={currentDate} onEmptySpaceClick={handleEmptySpaceClick}>
-          {!isLoading && reminders.map((reminder) => (
+          {error && (
+            <div className="col-span-full flex items-center justify-center p-8">
+              <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+                <p className="font-medium">Failed to load reminders</p>
+                <p className="mt-1 text-red-600">{error.message}</p>
+              </div>
+            </div>
+          )}
+          {!isLoading && !error && reminders.map((reminder) => (
             <ReminderCard
               key={reminder.id}
               reminder={reminder}
