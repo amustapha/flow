@@ -9,9 +9,11 @@ export interface DayViewGridProps {
 }
 
 export function DayViewGrid({ date, children }: DayViewGridProps) {
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentTime, setCurrentTime] = useState<Date | null>(null);
 
   useEffect(() => {
+    setCurrentTime(new Date());
+
     const interval = setInterval(() => {
       setCurrentTime(new Date());
     }, 60000);
@@ -29,7 +31,7 @@ export function DayViewGrid({ date, children }: DayViewGridProps) {
   };
 
   const getCurrentTimePosition = () => {
-    if (!isToday()) return null;
+    if (!currentTime || !isToday()) return null;
 
     const hours = currentTime.getHours();
     const minutes = currentTime.getMinutes();
