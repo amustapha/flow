@@ -29,12 +29,16 @@ class BaseService(ABC, Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
     def create(self, obj_data: CreateSchemaType) -> ModelType:
         """Create a new object."""
-        obj_dict = obj_data.model_dump()
-        db_obj = self.model(**obj_dict)
-        self.db.add(db_obj)
-        self.db.commit()
-        self.db.refresh(db_obj)
-        return db_obj
+        try:
+            obj_dict = obj_data.model_dump()
+            db_obj = self.model(**obj_dict)
+            self.db.add(db_obj)
+            self.db.commit()
+            self.db.refresh(db_obj)
+            return db_obj
+        except Exception:
+            self.db.rollback()
+            raise
 
     def get(self, obj_id: UUID) -> Optional[ModelType]:
         """Get an object by ID."""
@@ -50,13 +54,17 @@ class BaseService(ABC, Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         if not db_obj:
             return None
 
-        update_data = obj_data.model_dump(exclude_unset=True)
-        for field, value in update_data.items():
-            setattr(db_obj, field, value)
+        try:
+            update_data = obj_data.model_dump(exclude_unset=True)
+            for field, value in update_data.items():
+                setattr(db_obj, field, value)
 
-        self.db.commit()
-        self.db.refresh(db_obj)
-        return db_obj
+            self.db.commit()
+            self.db.refresh(db_obj)
+            return db_obj
+        except Exception:
+            self.db.rollback()
+            raise
 
     def delete(self, obj_id: UUID) -> bool:
         """Delete an object by ID."""
@@ -64,6 +72,10 @@ class BaseService(ABC, Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         if not db_obj:
             return False
 
-        self.db.delete(db_obj)
-        self.db.commit()
-        return True
+        try:
+            self.db.delete(db_obj)
+            self.db.commit()
+            return True
+        except Exception:
+            self.db.rollback()
+            raise
