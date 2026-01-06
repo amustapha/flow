@@ -1,11 +1,15 @@
 """Pydantic schemas for Reminder model."""
 
-import re
 from datetime import datetime, timezone
 from typing import Optional
-from pydantic import Field, field_validator, ConfigDict
-import pytz
+from pydantic import Field, field_validator
 from app.schemas.base import BaseSchema, IDMixin, TimestampMixin, ReminderStatus
+from app.schemas.validators import (
+    validate_e164_phone,
+    validate_e164_phone_optional,
+    validate_timezone,
+    validate_timezone_optional,
+)
 
 
 class ReminderBase(BaseSchema):
@@ -23,20 +27,13 @@ class ReminderBase(BaseSchema):
     @classmethod
     def validate_phone_number(cls, v: str) -> str:
         """Validate phone number is in E.164 format."""
-        pattern = r"^\+[1-9]\d{1,14}$"
-        if not re.match(pattern, v):
-            raise ValueError(
-                "Phone number must be in E.164 format (e.g., +14155552671)"
-            )
-        return v
+        return validate_e164_phone(v)
 
     @field_validator("timezone")
     @classmethod
-    def validate_timezone(cls, v: str) -> str:
+    def validate_timezone_field(cls, v: str) -> str:
         """Validate timezone is a valid timezone."""
-        if v not in pytz.all_timezones:
-            raise ValueError(f"Invalid timezone: {v}")
-        return v
+        return validate_timezone(v)
 
 
 class ReminderCreate(ReminderBase):
@@ -71,24 +68,13 @@ class ReminderUpdate(BaseSchema):
     @classmethod
     def validate_phone_number(cls, v: Optional[str]) -> Optional[str]:
         """Validate phone number if provided."""
-        if v is None:
-            return v
-        pattern = r"^\+[1-9]\d{1,14}$"
-        if not re.match(pattern, v):
-            raise ValueError(
-                "Phone number must be in E.164 format (e.g., +14155552671)"
-            )
-        return v
+        return validate_e164_phone_optional(v)
 
     @field_validator("timezone")
     @classmethod
-    def validate_timezone(cls, v: Optional[str]) -> Optional[str]:
+    def validate_timezone_field(cls, v: Optional[str]) -> Optional[str]:
         """Validate timezone if provided."""
-        if v is None:
-            return v
-        if v not in pytz.all_timezones:
-            raise ValueError(f"Invalid timezone: {v}")
-        return v
+        return validate_timezone_optional(v)
 
 
 class ReminderInDB(ReminderBase, IDMixin, TimestampMixin):
