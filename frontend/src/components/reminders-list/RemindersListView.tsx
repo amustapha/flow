@@ -3,10 +3,10 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, ChevronRightIcon, MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useReminders } from '@/hooks';
 import { useSettings } from '@/contexts';
-import { Button, Badge, TimeRemaining } from '@/components/ui';
+import { Button, Badge, TimeRemaining, Input } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { Reminder } from '@/types';
 
@@ -20,9 +20,13 @@ export function RemindersListView({
   pageSize = 5,
 }: RemindersListViewProps) {
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('');
   const { reminders, total, isLoading, error } = useReminders({
     page: currentPage,
-    pageSize
+    pageSize,
+    status: statusFilter || undefined,
+    searchQuery: searchQuery || undefined,
   });
   const { timezone } = useSettings();
 
@@ -38,6 +42,21 @@ export function RemindersListView({
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
     }
+  };
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    setCurrentPage(1); // Reset to first page when searching
+  };
+
+  const handleStatusFilterChange = (value: string) => {
+    setStatusFilter(value);
+    setCurrentPage(1); // Reset to first page when filtering
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery('');
+    setCurrentPage(1);
   };
 
   const getStatusColor = (status?: string) => {
@@ -68,6 +87,77 @@ export function RemindersListView({
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold text-gray-900">All Reminders</h3>
         <span className="text-xs text-gray-500">{total} total</span>
+      </div>
+
+      {/* Search Input */}
+      <div className="relative">
+        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+          <MagnifyingGlassIcon className="h-4 w-4 text-gray-400" />
+        </div>
+        <Input
+          type="text"
+          placeholder="Search reminders..."
+          value={searchQuery}
+          onChange={(e) => handleSearchChange(e.target.value)}
+          className="pl-9 pr-9 text-sm"
+        />
+        {searchQuery && (
+          <button
+            onClick={handleClearSearch}
+            className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+          >
+            <XMarkIcon className="h-4 w-4" />
+          </button>
+        )}
+      </div>
+
+      {/* Status Filter */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <span className="text-xs text-gray-500">Status:</span>
+        <button
+          onClick={() => handleStatusFilterChange('')}
+          className={cn(
+            'rounded-full px-3 py-1 text-xs font-medium transition-colors',
+            statusFilter === ''
+              ? 'bg-purple-600 text-white'
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+          )}
+        >
+          All
+        </button>
+        <button
+          onClick={() => handleStatusFilterChange('pending')}
+          className={cn(
+            'rounded-full px-3 py-1 text-xs font-medium transition-colors',
+            statusFilter === 'pending'
+              ? 'bg-purple-600 text-white'
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+          )}
+        >
+          Pending
+        </button>
+        <button
+          onClick={() => handleStatusFilterChange('completed')}
+          className={cn(
+            'rounded-full px-3 py-1 text-xs font-medium transition-colors',
+            statusFilter === 'completed'
+              ? 'bg-purple-600 text-white'
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+          )}
+        >
+          Completed
+        </button>
+        <button
+          onClick={() => handleStatusFilterChange('cancelled')}
+          className={cn(
+            'rounded-full px-3 py-1 text-xs font-medium transition-colors',
+            statusFilter === 'cancelled'
+              ? 'bg-purple-600 text-white'
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+          )}
+        >
+          Cancelled
+        </button>
       </div>
 
       {isLoading ? (
