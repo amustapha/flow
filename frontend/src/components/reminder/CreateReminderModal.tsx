@@ -90,97 +90,68 @@ export function CreateReminderModal({
     setTouched({});
   }, [reminder, isOpen, initialDateTime, settingsTimezone]);
 
-  const validateField = (name: keyof ReminderFormState, value: ReminderFormState[keyof ReminderFormState]): string | undefined => {
-    switch (name) {
-      case 'title':
-        if (typeof value === 'string' && !isNonEmptyString(value)) {
-          return 'Title is required';
-        }
-        break;
-
-      case 'message':
-        if (typeof value === 'string' && !isNonEmptyString(value)) {
-          return 'Message is required';
-        }
-        break;
-
-      case 'phone_number':
-        if (!value) {
-          return 'Phone number is required';
-        }
-        if (typeof value === 'string' && !isValidPhoneNumber(value)) {
-          return 'Please enter a valid phone number';
-        }
-        break;
-
-      case 'date':
-        if (!value) {
-          return 'Date is required';
-        }
-        if (value instanceof Date && formData.time && !isFutureDateTime(value, formData.time)) {
-          return 'Date and time must be in the future';
-        }
-        break;
-
-      case 'time':
-        if (typeof value === 'string' && !isNonEmptyString(value)) {
-          return 'Time is required';
-        }
-        if (typeof value === 'string' && formData.date && !isFutureDateTime(formData.date, value)) {
-          return 'Date and time must be in the future';
-        }
-        break;
-
-      case 'timezone':
-        if (!value) {
-          return 'Timezone is required';
-        }
-        if (typeof value === 'string' && !isValidTimezone(value)) {
-          return 'Please select a valid timezone';
-        }
-        break;
-    }
+  const validateField = (name: keyof ReminderFormState, data: ReminderFormState = formData): string | undefined => {
+    const validators: Record<keyof ReminderFormState, () => string | undefined> = {
+      title: () => !isNonEmptyString(data.title) ? 'Title is required' : undefined,
+      message: () => !isNonEmptyString(data.message) ? 'Message is required' : undefined,
+      phone_number: () => {
+        if (!data.phone_number) return 'Phone number is required';
+        if (!isValidPhoneNumber(data.phone_number)) return 'Please enter a valid phone number';
+        return undefined;
+      },
+      date: () => {
+        if (!data.date) return 'Date is required';
+        if (data.time && !isFutureDateTime(data.date, data.time)) return 'Date and time must be in the future';
+        return undefined;
+      },
+      time: () => {
+        if (!isNonEmptyString(data.time)) return 'Time is required';
+        if (data.date && !isFutureDateTime(data.date, data.time)) return 'Date and time must be in the future';
+        return undefined;
+      },
+      timezone: () => {
+        if (!data.timezone) return 'Timezone is required';
+        if (!isValidTimezone(data.timezone)) return 'Please select a valid timezone';
+        return undefined;
+      },
+    };
+    return validators[name]();
   };
 
   const validateForm = (): boolean => {
+    const fields: (keyof ReminderFormState)[] = ['title', 'message', 'phone_number', 'date', 'time', 'timezone'];
     const newErrors: Partial<Record<keyof ReminderFormState, string>> = {};
 
-    newErrors.title = validateField('title', formData.title);
-    newErrors.message = validateField('message', formData.message);
-    newErrors.phone_number = validateField('phone_number', formData.phone_number);
-    newErrors.date = validateField('date', formData.date);
-    newErrors.time = validateField('time', formData.time);
-    newErrors.timezone = validateField('timezone', formData.timezone);
+    fields.forEach((field) => {
+      newErrors[field] = validateField(field);
+    });
 
     setErrors(newErrors);
-
     return !Object.values(newErrors).some((error) => error !== undefined);
   };
 
   const handleFieldChange = (name: keyof ReminderFormState, value: ReminderFormState[keyof ReminderFormState]) => {
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const newFormData = { ...formData, [name]: value } as ReminderFormState;
+    setFormData(newFormData);
 
     // Validate field if it has been touched
     if (touched[name]) {
-      const error = validateField(name, value);
-      setErrors((prev) => ({ ...prev, [name]: error }));
+      setErrors((prev) => ({ ...prev, [name]: validateField(name, newFormData) }));
     }
 
-    // Re-validate date/time if the other changes
-    if (name === 'date' && formData.time) {
-      const timeError = validateField('time', formData.time);
-      setErrors((prev) => ({ ...prev, time: timeError }));
-    }
-    if (name === 'time' && formData.date) {
-      const dateError = validateField('date', formData.date);
-      setErrors((prev) => ({ ...prev, date: dateError }));
+    // Re-validate date/time if the other changes (they depend on each other)
+    if (name === 'date' || name === 'time') {
+      setErrors((prev) => ({
+        ...prev,
+        date: validateField('date', newFormData),
+        time: validateField('time', newFormData),
+      }));
     }
   };
 
   const handleBlur = (name: keyof ReminderFormState) => {
     setTouched((prev) => ({ ...prev, [name]: true }));
-    const error = validateField(name, formData[name]);
-    setErrors((prev) => ({ ...prev, [name]: error }));
+    setErrors((prev) => ({ ...prev, [name]: validateField(name) }));
   };
 
   const handleSave = () => {
