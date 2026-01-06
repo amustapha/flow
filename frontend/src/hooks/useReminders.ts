@@ -24,9 +24,26 @@ export function useReminders(date: Date) {
 
         const remindersList: Reminder[] = response.items.map((item) => ({
           ...item,
-          scheduled_time: new Date(item.scheduled_time),
-          created_at: item.created_at ? new Date(item.created_at) : undefined,
-          updated_at: item.updated_at ? new Date(item.updated_at) : undefined,
+          // Ensure datetime strings are parsed as UTC by appending 'Z' if missing
+          scheduled_time: new Date(
+            typeof item.scheduled_time === 'string' && !item.scheduled_time.endsWith('Z')
+              ? `${item.scheduled_time}Z`
+              : item.scheduled_time
+          ),
+          created_at: item.created_at
+            ? new Date(
+                typeof item.created_at === 'string' && !item.created_at.endsWith('Z')
+                  ? `${item.created_at}Z`
+                  : item.created_at
+              )
+            : undefined,
+          updated_at: item.updated_at
+            ? new Date(
+                typeof item.updated_at === 'string' && !item.updated_at.endsWith('Z')
+                  ? `${item.updated_at}Z`
+                  : item.updated_at
+              )
+            : undefined,
         }));
 
         setReminders(remindersList);

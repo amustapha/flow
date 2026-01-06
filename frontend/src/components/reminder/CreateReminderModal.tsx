@@ -201,16 +201,20 @@ export function CreateReminderModal({
     // Combine date and time in the selected timezone and convert to UTC
     const [hours, minutes] = formData.time.split(':').map(Number);
 
-    // Use UTC methods to avoid timezone offset issues with date picker
-    const year = formData.date!.getUTCFullYear();
-    const month = formData.date!.getUTCMonth();
-    const day = formData.date!.getUTCDate();
+    // Get the date components as displayed in the UI
+    const year = formData.date!.getFullYear();
+    const month = String(formData.date!.getMonth() + 1).padStart(2, '0');
+    const day = String(formData.date!.getDate()).padStart(2, '0');
+    const hoursStr = String(hours).padStart(2, '0');
+    const minutesStr = String(minutes).padStart(2, '0');
 
-    // Create a date representing the wall-clock time in the selected timezone
-    const dateInTimezone = new Date(year, month, day, hours, minutes, 0, 0);
+    // Create an ISO string without timezone info (YYYY-MM-DDTHH:mm:ss)
+    // This represents the wall-clock time in the selected timezone
+    const dateTimeStr = `${year}-${month}-${day}T${hoursStr}:${minutesStr}:00`;
 
     // Convert from the selected timezone to UTC
-    const scheduled_time = fromZonedTime(dateInTimezone, formData.timezone);
+    // fromZonedTime interprets the ISO string as if it's in the given timezone
+    const scheduled_time = fromZonedTime(dateTimeStr, formData.timezone);
 
     const reminderData: Partial<Reminder> = {
       ...(reminder?.id && { id: reminder.id }),
