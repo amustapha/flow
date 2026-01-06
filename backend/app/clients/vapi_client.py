@@ -58,6 +58,13 @@ class VapiClient:
         else:
             payload["assistant"] = {
                 "firstMessage": message,
+                "firstMessageMode": "assistant-speaks-first",
+                "systemPrompt": (
+                    "You are a voice reminder assistant. Your job is to deliver the reminder message "
+                    "to the user clearly. After delivering the message, ask if they have any questions "
+                    "or need the reminder repeated. Be friendly, concise, and helpful. "
+                    "If they confirm they understood, wish them a good day and end the call politely."
+                ),
                 "model": {
                     "provider": settings.VAPI_MODEL_PROVIDER,
                     "model": settings.VAPI_MODEL_NAME,
