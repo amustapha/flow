@@ -4,8 +4,16 @@ import { useState, useEffect } from 'react';
 import { Reminder } from '@/types';
 import { reminderService } from '@/services';
 
-export function useReminders(date: Date) {
+export interface UseRemindersOptions {
+  date?: Date;
+  page?: number;
+  pageSize?: number;
+}
+
+export function useReminders(options: UseRemindersOptions = {}) {
+  const { date, page, pageSize } = options;
   const [reminders, setReminders] = useState<Reminder[]>([]);
+  const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [refetchTrigger, setRefetchTrigger] = useState(0);
@@ -16,11 +24,25 @@ export function useReminders(date: Date) {
       setError(null);
 
       try {
-        const dateStr = date.toISOString().split('T')[0];
+        const params: {
+          date?: string;
+          page?: number;
+          page_size?: number;
+        } = {};
 
-        const response = await reminderService.list({
-          date: dateStr,
-        });
+        if (date) {
+          params.date = date.toISOString().split('T')[0];
+        }
+
+        if (page !== undefined) {
+          params.page = page;
+        }
+
+        if (pageSize !== undefined) {
+          params.page_size = pageSize;
+        }
+
+        const response = await reminderService.list(params);
 
         const remindersList: Reminder[] = response.items.map((item) => ({
           ...item,
@@ -47,18 +69,20 @@ export function useReminders(date: Date) {
         }));
 
         setReminders(remindersList);
+        setTotal(response.total);
       } catch (err) {
         setError(err instanceof Error ? err : new Error('Failed to fetch reminders'));
         setReminders([]);
+        setTotal(0);
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchReminders();
-  }, [date, refetchTrigger]);
+  }, [date, page, pageSize, refetchTrigger]);
 
   const refetch = () => setRefetchTrigger((prev) => prev + 1);
 
-  return { reminders, isLoading, error, refetch };
+  return { reminders, total, isLoading, error, refetch };
 }

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { format } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
-import { useAllReminders } from '@/hooks';
+import { useReminders } from '@/hooks';
 import { useSettings } from '@/contexts';
 import { Button, Badge, TimeRemaining } from '@/components/ui';
 import { cn } from '@/lib/utils';
@@ -20,7 +20,10 @@ export function RemindersListView({
   pageSize = 5,
 }: RemindersListViewProps) {
   const [currentPage, setCurrentPage] = useState(1);
-  const { reminders, total, isLoading, error } = useAllReminders(currentPage, pageSize);
+  const { reminders, total, isLoading, error } = useReminders({
+    page: currentPage,
+    pageSize
+  });
   const { timezone } = useSettings();
 
   const totalPages = Math.ceil(total / pageSize);

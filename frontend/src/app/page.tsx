@@ -21,7 +21,7 @@ import { reminderService } from '@/services';
 
 export default function Home() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const { reminders, isLoading, error, refetch } = useReminders(currentDate);
+  const { reminders, isLoading, error, refetch } = useReminders({ date: currentDate });
   const [selectedReminder, setSelectedReminder] = useState<Reminder | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
