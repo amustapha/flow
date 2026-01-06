@@ -26,6 +26,7 @@ export const TIMEZONES: Timezone[] = [
   { value: 'Europe/London', offset: 'UTC+0', label: '(UTC+0) London' },
   { value: 'Europe/Paris', offset: 'UTC+1', label: '(UTC+1) Paris' },
   { value: 'Europe/Berlin', offset: 'UTC+1', label: '(UTC+1) Berlin' },
+  { value: 'Africa/Lagos', offset: 'UTC+1', label: '(UTC+1) Lagos' },
   { value: 'Europe/Athens', offset: 'UTC+2', label: '(UTC+2) Athens' },
   { value: 'Africa/Cairo', offset: 'UTC+2', label: '(UTC+2) Cairo' },
   { value: 'Europe/Moscow', offset: 'UTC+3', label: '(UTC+3) Moscow' },
