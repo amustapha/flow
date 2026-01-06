@@ -7,7 +7,7 @@ import { toZonedTime } from 'date-fns-tz';
 import { ChevronLeftIcon, ChevronRightIcon, BellIcon, MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useReminders } from '@/hooks';
 import { useSettings } from '@/contexts';
-import { Button, TimeRemaining, Input, StatusBadge } from '@/components/ui';
+import { Button, Countdown, Input, StatusBadge } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { Reminder, ReminderStatus } from '@/types';
 import { StatusFilter } from './StatusFilter';
@@ -203,7 +203,7 @@ export function RemindersListView({
                       <div className="mt-1 flex items-center gap-2 text-xs text-gray-500">
                         <span>{format(timeInZone, 'MMM d, yyyy h:mm a')}</span>
                         <span className="text-gray-400">•</span>
-                        <TimeRemaining targetDate={reminder.scheduled_time} className="text-xs" />
+                        <Countdown targetDate={reminder.scheduled_time} variant="primary" size="sm" />
                       </div>
                     </div>
                     {reminder.status && (
