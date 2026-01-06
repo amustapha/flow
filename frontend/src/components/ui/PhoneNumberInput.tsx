@@ -67,6 +67,21 @@ const formatPhoneNumber = (value: string, format?: string): string => {
 };
 
 /**
+ * Converts a country code to its flag emoji
+ * Uses Regional Indicator Symbols to create flag emojis from ISO 3166-1 alpha-2 codes
+ */
+const countryCodeToFlag = (countryCode: string): string => {
+  const REGIONAL_INDICATOR_BASE = 0x1f1e5;
+  const ASCII_OFFSET = 65; // 'A' char code
+
+  return countryCode
+    .toUpperCase()
+    .split('')
+    .map((char) => String.fromCodePoint(REGIONAL_INDICATOR_BASE + char.charCodeAt(0) - ASCII_OFFSET + 1))
+    .join('');
+};
+
+/**
  * Extracts the phone number from E.164 format for display
  */
 const extractPhoneNumber = (e164Value: string, dialCode: string): string => {
@@ -200,7 +215,7 @@ const PhoneNumberInput = forwardRef<HTMLInputElement, PhoneNumberInputProps>(
               <ComboboxInput
                 id={`${inputId}-country`}
                 aria-label="Country code"
-                displayValue={(country: Country) => `${country.code} ${country.dialCode}`}
+                displayValue={(country: Country) => `${countryCodeToFlag(country.code)} ${country.dialCode}`}
                 onChange={(e) => setCountryQuery(e.target.value)}
                 onFocus={(e) => e.target.select()}
                 className={cn(
@@ -229,7 +244,7 @@ const PhoneNumberInput = forwardRef<HTMLInputElement, PhoneNumberInputProps>(
                       className="group relative cursor-pointer select-none py-2 pl-10 pr-4 text-gray-900 data-focus:bg-purple-100 data-selected:font-medium"
                     >
                       <span className="block truncate">
-                        {country.name} ({country.code}) {country.dialCode}
+                        {countryCodeToFlag(country.code)} {country.name} {country.dialCode}
                       </span>
                       <span className="absolute inset-y-0 left-0 hidden items-center pl-3 text-purple-600 group-data-selected:flex">
                         <CheckIcon className="size-4" aria-hidden="true" />
