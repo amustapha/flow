@@ -68,6 +68,7 @@ class VapiClient:
                     "voiceId": "21m00Tcm4TlvDq8ikWAM",
                 },
                 "voicemailDetection": {
+                    "provider": "twilio",
                     "enabled": False,
                 },
             }
