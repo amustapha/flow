@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
+import { MONTH_NAMES, DAY_NAMES_ABBREV } from '@/lib/constants';
 
 export interface CalendarProps {
   /**
@@ -28,13 +29,6 @@ export function Calendar({ initialDate, onDateSelect, className }: CalendarProps
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const today = new Date();
-
-  const monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
-  ];
-
-  const dayNames = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
   const previousMonth = () => {
     setCurrentDate(new Date(year, month - 1));
@@ -86,7 +80,7 @@ export function Calendar({ initialDate, onDateSelect, className }: CalendarProps
     <div className={cn('', className)}>
       <div className="mb-4 flex items-center justify-between">
         <h3 className="text-base font-semibold text-gray-900">
-          {monthNames[month]} {year}
+          {MONTH_NAMES[month]} {year}
         </h3>
         <div className="flex gap-1">
           <button
@@ -107,7 +101,7 @@ export function Calendar({ initialDate, onDateSelect, className }: CalendarProps
       </div>
 
       <div className="grid grid-cols-7 gap-1.5">
-        {dayNames.map(day => (
+        {DAY_NAMES_ABBREV.map(day => (
           <div key={day} className="h-9 w-9 text-center text-sm font-medium text-gray-500">
             {day}
           </div>

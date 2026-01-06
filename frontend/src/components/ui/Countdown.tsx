@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { ClockIcon } from '@heroicons/react/24/outline';
 import { Badge } from './Badge';
 
 export interface CountdownProps {
@@ -45,8 +46,11 @@ export function Countdown({
     return () => clearInterval(interval);
   }, [targetDate]);
 
+  const iconSize = size === 'sm' ? 'h-3 w-3' : size === 'lg' ? 'h-5 w-5' : 'h-4 w-4';
+
   return (
     <Badge variant={variant} size={size} className={className}>
+      <ClockIcon className={`${iconSize} mr-1`} />
       {timeLeft}
     </Badge>
   );

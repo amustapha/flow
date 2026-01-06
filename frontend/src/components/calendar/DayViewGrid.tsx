@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { toZonedTime } from 'date-fns-tz';
 import { useSettings } from '@/contexts';
+import { isTodayInTimezone, TIME_GRID } from '@/lib';
 
 export interface DayViewGridProps {
   date: Date;

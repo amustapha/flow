@@ -3,6 +3,7 @@
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/components/ui';
 import { cn } from '@/lib/utils';
+import { DAY_NAMES, isToday } from '@/lib';
 
 export interface DateNavigationProps {
   currentDate: Date;
@@ -12,16 +13,7 @@ export interface DateNavigationProps {
 }
 
 export function DateNavigation({ currentDate, onPrevious, onNext, onToday }: DateNavigationProps) {
-  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
-  const isToday = () => {
-    const today = new Date();
-    return (
-      currentDate.getDate() === today.getDate() &&
-      currentDate.getMonth() === today.getMonth() &&
-      currentDate.getFullYear() === today.getFullYear()
-    );
-  };
+  const isTodaySelected = isToday(currentDate);
 
   return (
     <div className="flex items-center gap-4">
@@ -31,7 +23,7 @@ export function DateNavigation({ currentDate, onPrevious, onNext, onToday }: Dat
         onClick={onToday}
         className={cn(
           'min-w-20',
-          isToday() && 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+          isTodaySelected && 'bg-purple-100 text-purple-700 hover:bg-purple-200'
         )}
       >
         Today
@@ -60,7 +52,7 @@ export function DateNavigation({ currentDate, onPrevious, onNext, onToday }: Dat
 
       <div className="min-w-50">
         <div className="flex items-baseline gap-2">
-          <span className="text-sm font-medium text-gray-500">{dayNames[currentDate.getDay()]}</span>
+          <span className="text-sm font-medium text-gray-500">{DAY_NAMES[currentDate.getDay()]}</span>
           <span className="text-xl font-semibold text-gray-900">{currentDate.getDate()}</span>
         </div>
       </div>
