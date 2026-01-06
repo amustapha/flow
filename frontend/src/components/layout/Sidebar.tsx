@@ -1,7 +1,7 @@
 "use client";
 
 import { BellIcon } from "@heroicons/react/24/outline";
-import { Calendar, Button } from "@/components/ui";
+import { Button } from "@/components/ui";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 import { RemindersListView } from "@/components/reminders-list";
 import { Reminder } from "@/types";
@@ -19,11 +19,6 @@ export function Sidebar({ onCreateReminder, onOpenSettings, onReminderClick }: S
       <div className="mb-6 hidden lg:block">
         <h1 className="text-xl font-bold text-purple-600">Flow</h1>
         <p className="text-xs text-gray-500">Voice Reminders</p>
-      </div>
-
-      {/* Calendar */}
-      <div className="mb-6 hidden lg:block">
-        <Calendar />
       </div>
 
       {/* Reminders List */}
