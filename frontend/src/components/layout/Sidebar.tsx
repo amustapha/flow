@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { BellIcon } from '@heroicons/react/24/outline';
-import { Calendar, Button } from '@/components/ui';
-import { Cog6ToothIcon } from '@heroicons/react/24/outline';
+import { BellIcon } from "@heroicons/react/24/outline";
+import { Calendar, Button } from "@/components/ui";
+import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 
 export interface SidebarProps {
   onCreateReminder?: () => void;
@@ -10,7 +10,6 @@ export interface SidebarProps {
 }
 
 export function Sidebar({ onCreateReminder, onOpenSettings }: SidebarProps) {
-
   return (
     <div className="flex h-full flex-col">
       {/* Logo/Brand - hidden on mobile */}
@@ -25,22 +24,14 @@ export function Sidebar({ onCreateReminder, onOpenSettings }: SidebarProps) {
       </div>
 
       {/* Action Buttons - at bottom */}
-      <div className="mt-auto space-y-3 border-t border-gray-200 pt-4">
-        <Button
-          variant="primary"
-          onClick={onCreateReminder}
-          className="w-full"
-        >
+      <div className="mt-auto space-y-3 border-t border-gray-200 pt-4 flex  gap-2">
+        <Button variant="primary" onClick={onCreateReminder} className="w-full">
           <BellIcon className="h-5 w-5 mr-2" />
           Create Reminder
         </Button>
-        <button
-          onClick={onOpenSettings}
-          className="flex w-full items-center justify-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2"
-        >
-          <Cog6ToothIcon className="h-5 w-5" />
-          Settings
-        </button>
+        <Button onClick={onOpenSettings} className="w-12" variant="ghost">
+          <Cog6ToothIcon className="h-6 w-6" />
+        </Button>
       </div>
     </div>
   );
