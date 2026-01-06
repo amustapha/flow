@@ -67,6 +67,9 @@ class VapiClient:
                     "provider": "11labs",
                     "voiceId": "21m00Tcm4TlvDq8ikWAM",
                 },
+                "voicemailDetection": {
+                    "enabled": False,
+                },
             }
 
         if phone_number_id:
