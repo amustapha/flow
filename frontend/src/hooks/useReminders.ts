@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Reminder, ReminderStatus } from '@/types';
 import { reminderService } from '@/services';
 import { useSettings } from '@/contexts';
+import { parseUTCDate, parseOptionalUTCDate } from '@/lib';
 
 export interface UseRemindersOptions {
   date?: Date;
@@ -60,26 +61,9 @@ export function useReminders(options: UseRemindersOptions = {}) {
 
         let remindersList: Reminder[] = response.items.map((item) => ({
           ...item,
-          // Ensure datetime strings are parsed as UTC by appending 'Z' if missing
-          scheduled_time: new Date(
-            typeof item.scheduled_time === 'string' && !item.scheduled_time.endsWith('Z')
-              ? `${item.scheduled_time}Z`
-              : item.scheduled_time
-          ),
-          created_at: item.created_at
-            ? new Date(
-                typeof item.created_at === 'string' && !item.created_at.endsWith('Z')
-                  ? `${item.created_at}Z`
-                  : item.created_at
-              )
-            : undefined,
-          updated_at: item.updated_at
-            ? new Date(
-                typeof item.updated_at === 'string' && !item.updated_at.endsWith('Z')
-                  ? `${item.updated_at}Z`
-                  : item.updated_at
-              )
-            : undefined,
+          scheduled_time: parseUTCDate(item.scheduled_time),
+          created_at: parseOptionalUTCDate(item.created_at),
+          updated_at: parseOptionalUTCDate(item.updated_at),
         }));
 
         // Client-side filtering by search query
