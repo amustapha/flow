@@ -2,13 +2,14 @@
 
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { ReminderStatus } from '@/types';
 
-const STATUS_OPTIONS = [
+const STATUS_OPTIONS: Array<{ value: '' | ReminderStatus; label: string }> = [
   { value: '', label: 'All' },
   { value: 'Scheduled', label: 'Scheduled' },
   { value: 'Completed', label: 'Completed' },
   { value: 'Failed', label: 'Failed' },
-] as const;
+];
 
 export function StatusFilter() {
   const router = useRouter();
