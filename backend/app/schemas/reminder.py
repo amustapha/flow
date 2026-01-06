@@ -65,7 +65,7 @@ class ReminderUpdate(BaseSchema):
     phone_number: Optional[str] = Field(None, examples=["+14155552671"])
     scheduled_time: Optional[datetime] = Field(None, examples=["2026-01-17T14:30:00Z"])
     timezone: Optional[str] = Field(None, examples=["America/Los_Angeles"])
-    status: Optional[ReminderStatus] = Field(None, examples=["completed"])
+    status: Optional[ReminderStatus] = Field(None, examples=["Completed"])
 
     @field_validator("phone_number")
     @classmethod

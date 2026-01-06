@@ -32,18 +32,14 @@ class TimestampMixin(BaseModel):
 class ReminderStatus(str, Enum):
     """Reminder status enum."""
 
-    PENDING = "pending"
-    IN_PROGRESS = "in_progress"
-    COMPLETED = "completed"
-    FAILED = "failed"
-    CANCELLED = "cancelled"
+    SCHEDULED = "Scheduled"
+    COMPLETED = "Completed"
+    FAILED = "Failed"
 
 
 class CallStatus(str, Enum):
     """Call status enum."""
 
-    PENDING = "pending"
-    IN_PROGRESS = "in_progress"
-    COMPLETED = "completed"
-    FAILED = "failed"
-    CANCELLED = "cancelled"
+    SCHEDULED = "Scheduled"
+    COMPLETED = "Completed"
+    FAILED = "Failed"

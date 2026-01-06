@@ -1,3 +1,5 @@
+export type ReminderStatus = 'Scheduled' | 'Completed' | 'Failed';
+
 export interface Reminder {
   id: string;
   title: string;
@@ -5,7 +7,7 @@ export interface Reminder {
   phone_number: string;
   scheduled_time: Date;
   timezone: string;
-  status?: 'pending' | 'in_progress' | 'completed' | 'failed' | 'cancelled';
+  status?: ReminderStatus;
   created_at?: Date;
   updated_at?: Date;
 }
@@ -24,7 +26,7 @@ export interface ReminderUpdate {
   phone_number?: string;
   scheduled_time?: Date;
   timezone?: string;
-  status?: 'pending' | 'in_progress' | 'completed' | 'failed' | 'cancelled';
+  status?: ReminderStatus;
 }
 
 // API response types (dates as strings from backend)
@@ -35,7 +37,7 @@ export interface ReminderResponse {
   phone_number: string;
   scheduled_time: string;
   timezone: string;
-  status?: 'pending' | 'in_progress' | 'completed' | 'failed' | 'cancelled';
+  status?: ReminderStatus;
   created_at?: string;
   updated_at?: string;
 }

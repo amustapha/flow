@@ -50,7 +50,7 @@ def list_calls(
 
     Query parameters:
     - reminder_id: Filter by reminder ID
-    - status: Filter by call status (pending, in_progress, completed, failed, cancelled)
+    - status: Filter by call status (Scheduled, Completed, Failed)
     """
     calls = service.get_calls(reminder_id=reminder_id, status=status_filter)
     return calls

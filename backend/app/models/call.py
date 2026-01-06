@@ -18,8 +18,8 @@ class Call(TimestampedBase):
     )
     vapi_call_id = Column(String, nullable=True)
     status = Column(
-        String, default="pending", nullable=False
-    )  # pending, in_progress, completed, failed, cancelled
+        String, default="Scheduled", nullable=False
+    )  # Scheduled, Completed, Failed
 
     # Relationships
     reminder = relationship("Reminder", back_populates="calls")
