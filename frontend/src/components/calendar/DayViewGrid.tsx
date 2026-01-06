@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { toZonedTime } from 'date-fns-tz';
+import { useSettings } from '@/contexts';
 
 export interface DayViewGridProps {
   date: Date;
@@ -9,6 +11,7 @@ export interface DayViewGridProps {
 }
 
 export function DayViewGrid({ date, children, onEmptySpaceClick }: DayViewGridProps) {
+  const { timezone } = useSettings();
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
 
   useEffect(() => {
@@ -51,8 +54,10 @@ export function DayViewGrid({ date, children, onEmptySpaceClick }: DayViewGridPr
   const getCurrentTimePosition = () => {
     if (!currentTime || !isToday()) return null;
 
-    const hours = currentTime.getHours();
-    const minutes = currentTime.getMinutes();
+    // Convert current time to selected timezone
+    const timeInZone = toZonedTime(currentTime, timezone);
+    const hours = timeInZone.getHours();
+    const minutes = timeInZone.getMinutes();
     const totalMinutes = hours * 60 + minutes;
     const percentageOfDay = (totalMinutes / (24 * 60)) * 100;
 
@@ -60,11 +65,12 @@ export function DayViewGrid({ date, children, onEmptySpaceClick }: DayViewGridPr
   };
 
   const isToday = () => {
-    const today = new Date();
+    // Convert current time to selected timezone for comparison
+    const todayInZone = toZonedTime(new Date(), timezone);
     return (
-      date.getDate() === today.getDate() &&
-      date.getMonth() === today.getMonth() &&
-      date.getFullYear() === today.getFullYear()
+      date.getDate() === todayInZone.getDate() &&
+      date.getMonth() === todayInZone.getMonth() &&
+      date.getFullYear() === todayInZone.getFullYear()
     );
   };
 

@@ -2,6 +2,7 @@
 
 import { Modal, Button } from '@/components/ui';
 import { Reminder } from '@/types';
+import { useSettings } from '@/contexts';
 
 export interface ReminderDetailModalProps {
   isOpen: boolean;
@@ -18,6 +19,8 @@ export function ReminderDetailModal({
   onEdit,
   onDelete,
 }: ReminderDetailModalProps) {
+  const { timezone } = useSettings();
+
   if (!reminder) {
     return null;
   }
@@ -106,7 +109,7 @@ export function ReminderDetailModal({
         <div>
           <h4 className="text-sm font-medium text-gray-700 mb-1">Scheduled For</h4>
           <p className="text-sm text-gray-900">
-            {formatDateTime(reminder.scheduled_time, reminder.timezone)}
+            {formatDateTime(reminder.scheduled_time, timezone)}
           </p>
         </div>
 

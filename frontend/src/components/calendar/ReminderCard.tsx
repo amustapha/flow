@@ -1,8 +1,10 @@
 'use client';
 
 import { differenceInMinutes, format, getHours, getMinutes } from 'date-fns';
+import { toZonedTime } from 'date-fns-tz';
 import { cn } from '@/lib/utils';
 import { Reminder } from '@/types';
+import { useSettings } from '@/contexts';
 
 export interface ReminderCardProps {
   reminder: Reminder;
@@ -17,10 +19,15 @@ export function ReminderCard({
   overlapIndex = 0,
   totalOverlaps = 1,
 }: ReminderCardProps) {
-  const { title, scheduled_time: time } = reminder;
+  const { timezone } = useSettings();
+  const { title, scheduled_time } = reminder;
+
+  // Convert UTC time to selected timezone
+  const timeInZone = toZonedTime(scheduled_time, timezone);
+
   const getColor = () => {
     const now = new Date();
-    const minutesDiff = differenceInMinutes(time, now);
+    const minutesDiff = differenceInMinutes(scheduled_time, now);
 
     if (minutesDiff < -5) {
       return 'gray';
@@ -40,8 +47,8 @@ export function ReminderCard({
   };
 
   const getPosition = () => {
-    const hours = getHours(time);
-    const minutes = getMinutes(time);
+    const hours = getHours(timeInZone);
+    const minutes = getMinutes(timeInZone);
     const totalMinutes = hours * 60 + minutes;
     const topPercentage = (totalMinutes / (24 * 60)) * 100;
 
@@ -91,7 +98,7 @@ export function ReminderCard({
         <p className="truncate text-sm font-semibold" title={title}>
           {title}
         </p>
-        <p className="text-xs opacity-75">{formatTime(time)}</p>
+        <p className="text-xs opacity-75">{formatTime(timeInZone)}</p>
       </div>
     </div>
   );
