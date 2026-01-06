@@ -12,19 +12,9 @@ logger = logging.getLogger(__name__)
 
 
 class VapiClient:
-    """Client for interacting with VAPI API.
-
-    VAPI is a voice AI service that enables automated phone calls
-    with text-to-speech capabilities.
-    """
+    """Client for interacting with VAPI API."""
 
     def __init__(self, api_key: Optional[str] = None, api_url: Optional[str] = None):
-        """Initialize VAPI client with API credentials.
-
-        Args:
-            api_key: VAPI API key. Defaults to settings.VAPI_API_KEY
-            api_url: VAPI API base URL. Defaults to settings.VAPI_API_URL
-        """
         self.api_key = api_key or settings.VAPI_API_KEY
         self.api_url = api_url or settings.VAPI_API_URL
 
@@ -35,7 +25,6 @@ class VapiClient:
             raise ValidationError("VAPI_API_URL is not configured")
 
     def _get_headers(self) -> Dict[str, str]:
-        """Get HTTP headers for VAPI API requests."""
         return {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
@@ -49,53 +38,24 @@ class VapiClient:
         phone_number_id: Optional[str] = None,
         assistant_overrides: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
-        """Initiate an outbound voice call via VAPI.
-
-        Args:
-            phone_number: Customer's phone number in E.164 format (e.g., +14155552671)
-            message: The message to speak during the call
-            assistant_id: ID of a saved VAPI assistant. If not provided, creates transient assistant
-            phone_number_id: ID of the VAPI phone number to call from
-            assistant_overrides: Optional overrides for the assistant configuration
-
-        Returns:
-            Dict containing the VAPI call response with 'id' and other call details
-
-        Raises:
-            ValidationError: If required parameters are missing or invalid
-            httpx.HTTPError: If the API request fails
-
-        Example:
-            >>> client = VapiClient()
-            >>> response = await client.initiate_call(
-            ...     phone_number="+14155552671",
-            ...     message="Don't forget your 3pm meeting",
-            ...     assistant_id="asst_123",
-            ...     phone_number_id="pn_123"
-            ... )
-            >>> vapi_call_id = response["id"]
-        """
+        """Initiate an outbound voice call via VAPI."""
         if not phone_number:
             raise ValidationError("phone_number is required")
 
         if not message:
             raise ValidationError("message is required")
 
-        # Build request payload
         payload: Dict[str, Any] = {
             "customer": {
                 "number": phone_number,
             }
         }
 
-        # Add assistant configuration
         if assistant_id:
             payload["assistantId"] = assistant_id
-            # Apply overrides if provided
             if assistant_overrides:
                 payload["assistantOverrides"] = assistant_overrides
         else:
-            # Create transient assistant with the message
             payload["assistant"] = {
                 "firstMessage": message,
                 "model": {
@@ -105,15 +65,13 @@ class VapiClient:
                 },
                 "voice": {
                     "provider": "11labs",
-                    "voiceId": "21m00Tcm4TlvDq8ikWAM",  # Default voice
+                    "voiceId": "21m00Tcm4TlvDq8ikWAM",
                 },
             }
 
-        # Add phone number ID if provided
         if phone_number_id:
             payload["phoneNumberId"] = phone_number_id
 
-        # Make API request
         async with httpx.AsyncClient(timeout=30.0) as client:
             logger.info(f"Creating VAPI call to {phone_number}")
 
@@ -138,17 +96,7 @@ class VapiClient:
                 raise
 
     async def get_call(self, call_id: str) -> Dict[str, Any]:
-        """Get details of a specific call.
-
-        Args:
-            call_id: The VAPI call ID
-
-        Returns:
-            Dict containing call details including status
-
-        Raises:
-            httpx.HTTPError: If the API request fails
-        """
+        """Get details of a specific call."""
         if not call_id:
             raise ValidationError("call_id is required")
 
@@ -172,17 +120,7 @@ class VapiClient:
                 raise
 
     async def cancel_call(self, call_id: str) -> Dict[str, Any]:
-        """Cancel an ongoing or scheduled call.
-
-        Args:
-            call_id: The VAPI call ID
-
-        Returns:
-            Dict containing the updated call status
-
-        Raises:
-            httpx.HTTPError: If the API request fails
-        """
+        """Cancel an ongoing or scheduled call."""
         if not call_id:
             raise ValidationError("call_id is required")
 
