@@ -6,7 +6,7 @@ services:
       target: prod
     container_name: flow-backend-prod
     ports:
-      - "8000:8000"
+      - "4322:8000"
     environment:
       - DATABASE_URL=sqlite:///./flow.db
       - PYTHONUNBUFFERED=1
@@ -105,7 +105,7 @@ services:
       target: runner
     container_name: flow-frontend-prod
     ports:
-      - "3000:3000"
+      - "4321:3000"
     environment:
       # Set in Dokploy UI - should point to backend API URL
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://backend:8000}
