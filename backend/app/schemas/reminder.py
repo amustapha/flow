@@ -1,4 +1,5 @@
 """Pydantic schemas for Reminder model."""
+
 import re
 from datetime import datetime, timezone
 from typing import Optional
@@ -11,7 +12,9 @@ class ReminderBase(BaseSchema):
     """Base reminder schema with common fields."""
 
     title: str = Field(..., examples=["Doctor Appointment"])
-    message: str = Field(..., examples=["Don't forget your annual checkup with Dr. Smith"])
+    message: str = Field(
+        ..., examples=["Don't forget your annual checkup with Dr. Smith"]
+    )
     phone_number: str = Field(..., examples=["+14155552671"])
     scheduled_time: datetime = Field(..., examples=["2026-01-10T14:30:00Z"])
     timezone: str = Field(..., examples=["America/Los_Angeles"])
@@ -56,7 +59,9 @@ class ReminderUpdate(BaseSchema):
     """Schema for updating a reminder (all fields optional)."""
 
     title: Optional[str] = Field(None, examples=["Doctor Appointment - Rescheduled"])
-    message: Optional[str] = Field(None, examples=["Your appointment has been moved to next week"])
+    message: Optional[str] = Field(
+        None, examples=["Your appointment has been moved to next week"]
+    )
     phone_number: Optional[str] = Field(None, examples=["+14155552671"])
     scheduled_time: Optional[datetime] = Field(None, examples=["2026-01-17T14:30:00Z"])
     timezone: Optional[str] = Field(None, examples=["America/Los_Angeles"])

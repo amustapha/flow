@@ -1,4 +1,5 @@
 """Base service with common CRUD operations."""
+
 from abc import ABC
 from typing import Generic, TypeVar, Type, Optional, List
 from uuid import UUID

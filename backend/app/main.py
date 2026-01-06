@@ -7,7 +7,7 @@ from app.core.exceptions import NotFoundError, ValidationError, ConflictError
 app = FastAPI(
     title="Flow - Call Me Reminder API",
     description="Backend API for Flow reminder application",
-    version="0.1.0"
+    version="0.1.0",
 )
 
 # Configure CORS

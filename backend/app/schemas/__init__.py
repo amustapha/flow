@@ -1,4 +1,5 @@
 """Pydantic schemas for the Flow application."""
+
 from app.schemas.base import (
     BaseSchema,
     IDMixin,
