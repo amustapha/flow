@@ -44,6 +44,9 @@ class ReminderCreate(ReminderBase):
     def validate_future_time(cls, v: datetime) -> datetime:
         """Ensure scheduled time is in the future."""
         now = datetime.now(timezone.utc)
+        # Make v timezone-aware if it's naive (assume UTC)
+        if v.tzinfo is None:
+            v = v.replace(tzinfo=timezone.utc)
         if v <= now:
             raise ValueError("Scheduled time must be in the future")
         return v
