@@ -11,10 +11,11 @@ from sqlalchemy.orm import Session
 
 from app.celery_app import celery_app
 from app.clients import VapiClient
+from app.core.config import settings
 from app.core.database import SessionLocal
 from app.services import CallService, ReminderService
 from app.models.reminder import Reminder
-from app.schemas.call import CallCreate
+from app.schemas.call import CallCreate, CallUpdate
 from app.core.exceptions import NotFoundError, ValidationError
 
 logger = logging.getLogger(__name__)
@@ -81,6 +82,7 @@ def initiate_vapi_call(self, call_id: str) -> dict:
             vapi_client.initiate_call(
                 phone_number=reminder.phone_number,
                 message=reminder.message,
+                phone_number_id=settings.VAPI_PHONE_NUMBER_ID or None,
             )
         )
 
@@ -92,7 +94,7 @@ def initiate_vapi_call(self, call_id: str) -> dict:
 
         call = call_service.update(
             call_uuid,
-            {"vapi_call_id": vapi_call_id, "status": "in_progress"},
+            CallUpdate(vapi_call_id=vapi_call_id, status="in_progress"),
         )
 
         logger.info(
@@ -173,7 +175,9 @@ def process_scheduled_reminders() -> dict:
     db = SessionLocal()
 
     try:
-        now = datetime.now(timezone.utc)
+        # Use naive UTC datetime for SQLite compatibility
+        # SQLite stores datetimes as strings without timezone info
+        now = datetime.utcnow()
 
         due_reminders = (
             db.query(Reminder)
