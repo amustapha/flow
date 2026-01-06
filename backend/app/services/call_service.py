@@ -1,5 +1,6 @@
 """Service layer for Call business logic."""
 
+import logging
 from typing import Optional
 from uuid import UUID
 from sqlalchemy.orm import Session, joinedload
@@ -7,6 +8,8 @@ from app.models.call import Call
 from app.models.reminder import Reminder
 from app.schemas.call import CallCreate, CallUpdate
 from app.services.base import BaseService
+
+logger = logging.getLogger(__name__)
 
 
 class CallService(BaseService[Call, CallCreate, CallUpdate]):
@@ -17,15 +20,25 @@ class CallService(BaseService[Call, CallCreate, CallUpdate]):
         super().__init__(Call, db)
 
     def create(self, call_data: CallCreate) -> Optional[Call]:
-        """Create a new call, verifying reminder exists."""
-        # Verify reminder exists
+        """Create a new call and trigger VAPI call initiation."""
         reminder = (
             self.db.query(Reminder).filter(Reminder.id == call_data.reminder_id).first()
         )
         if not reminder:
             return None
 
-        return super().create(call_data)
+        call = super().create(call_data)
+
+        if call:
+            from app.tasks import initiate_vapi_call
+
+            try:
+                initiate_vapi_call.delay(str(call.id))
+                logger.info(f"Queued VAPI call initiation task for call {call.id}")
+            except Exception as e:
+                logger.error(f"Failed to queue VAPI call task: {str(e)}", exc_info=True)
+
+        return call
 
     def get(self, call_id: UUID) -> Optional[Call]:
         """Get a call by ID with reminder loaded."""
