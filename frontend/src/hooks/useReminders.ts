@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Reminder } from '@/types';
 import { reminderService } from '@/services';
+import { useSettings } from '@/contexts';
 
 export interface UseRemindersOptions {
   date?: Date;
@@ -17,6 +18,7 @@ export function useReminders(options: UseRemindersOptions = {}) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [refetchTrigger, setRefetchTrigger] = useState(0);
+  const { timezone } = useSettings();
 
   useEffect(() => {
     const fetchReminders = async () => {
@@ -28,6 +30,7 @@ export function useReminders(options: UseRemindersOptions = {}) {
           date?: string;
           page?: number;
           page_size?: number;
+          timezone?: string;
         } = {};
 
         if (date) {
@@ -40,6 +43,10 @@ export function useReminders(options: UseRemindersOptions = {}) {
 
         if (pageSize !== undefined) {
           params.page_size = pageSize;
+        }
+
+        if (timezone) {
+          params.timezone = timezone;
         }
 
         const response = await reminderService.list(params);
@@ -80,7 +87,7 @@ export function useReminders(options: UseRemindersOptions = {}) {
     };
 
     fetchReminders();
-  }, [date, page, pageSize, refetchTrigger]);
+  }, [date, page, pageSize, timezone, refetchTrigger]);
 
   const refetch = () => setRefetchTrigger((prev) => prev + 1);
 
