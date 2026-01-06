@@ -16,12 +16,14 @@ export interface RemindersListViewProps {
   onReminderClick?: (reminder: Reminder) => void;
   onCreateReminder?: () => void;
   pageSize?: number;
+  refetchTrigger?: number;
 }
 
 export function RemindersListView({
   onReminderClick,
   onCreateReminder,
   pageSize = 5,
+  refetchTrigger = 0,
 }: RemindersListViewProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -35,13 +37,20 @@ export function RemindersListView({
   // Read status directly from URL
   const statusFilter = searchParams.get('status') || undefined;
 
-  const { reminders, total, isLoading, error } = useReminders({
+  const { reminders, total, isLoading, error, refetch } = useReminders({
     page: currentPage,
     pageSize,
     status: statusFilter,
     searchQuery: searchQuery || undefined,
   });
   const { timezone } = useSettings();
+
+  // Refetch when external trigger changes
+  useEffect(() => {
+    if (refetchTrigger > 0) {
+      refetch();
+    }
+  }, [refetchTrigger, refetch]);
 
   // Debounce search input
   useEffect(() => {

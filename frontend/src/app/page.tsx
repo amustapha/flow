@@ -30,6 +30,7 @@ export default function Home() {
   const [reminderToEdit, setReminderToEdit] = useState<Reminder | null>(null);
   const [reminderToDelete, setReminderToDelete] = useState<Reminder | null>(null);
   const [initialDateTime, setInitialDateTime] = useState<Date | undefined>(undefined);
+  const [sidebarRefetchTrigger, setSidebarRefetchTrigger] = useState(0);
 
   const handlePreviousMonth = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1));
@@ -78,6 +79,7 @@ export default function Home() {
       setIsDeleteModalOpen(false);
       setReminderToDelete(null);
       refetch();
+      setSidebarRefetchTrigger((prev) => prev + 1);
     } catch (err) {
       console.error('Failed to delete reminder:', err);
       // TODO: Show error toast/notification
@@ -101,6 +103,7 @@ export default function Home() {
       setIsCreateModalOpen(false);
       setReminderToEdit(null);
       refetch();
+      setSidebarRefetchTrigger((prev) => prev + 1);
     } catch (err) {
       console.error('Failed to save reminder:', err);
       // TODO: Show error toast/notification
@@ -139,7 +142,7 @@ export default function Home() {
   };
 
   return (
-    <AppLayout sidebar={<Sidebar onCreateReminder={handleCreateReminder} onOpenSettings={handleOpenSettings} onReminderClick={handleReminderClick} />}>
+    <AppLayout sidebar={<Sidebar onCreateReminder={handleCreateReminder} onOpenSettings={handleOpenSettings} onReminderClick={handleReminderClick} refetchTrigger={sidebarRefetchTrigger} />}>
       <div className="flex h-full flex-col">
         <CalendarHeader
           month={MONTH_NAMES[currentDate.getMonth()]}

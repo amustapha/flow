@@ -10,9 +10,10 @@ export interface SidebarProps {
   onCreateReminder?: () => void;
   onOpenSettings?: () => void;
   onReminderClick?: (reminder: Reminder) => void;
+  refetchTrigger?: number;
 }
 
-export function Sidebar({ onCreateReminder, onOpenSettings, onReminderClick }: SidebarProps) {
+export function Sidebar({ onCreateReminder, onOpenSettings, onReminderClick, refetchTrigger }: SidebarProps) {
   return (
     <div className="flex h-full flex-col pt-16 lg:pt-0">
       {/* Logo/Brand - hidden on mobile */}
@@ -26,6 +27,7 @@ export function Sidebar({ onCreateReminder, onOpenSettings, onReminderClick }: S
         <RemindersListView
           onReminderClick={onReminderClick}
           onCreateReminder={onCreateReminder}
+          refetchTrigger={refetchTrigger}
         />
       </div>
 
