@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Modal, Button, Input, PhoneNumberInput, DatePicker, TimezoneInput } from '@/components/ui';
 import { Reminder } from '@/types';
+import { useSettings } from '@/contexts';
 import {
   isValidPhoneNumber,
   isFutureDateTime,
@@ -34,6 +35,7 @@ export function CreateReminderModal({
   initialDateTime,
 }: CreateReminderModalProps) {
   const isEditMode = !!reminder;
+  const { timezone: settingsTimezone } = useSettings();
 
   const [formData, setFormData] = useState<ReminderFormState>({
     title: '',
@@ -41,7 +43,7 @@ export function CreateReminderModal({
     phone_number: '',
     date: undefined,
     time: '',
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    timezone: settingsTimezone,
   });
 
   const [errors, setErrors] = useState<Partial<Record<keyof ReminderFormState, string>>>({});
@@ -80,12 +82,12 @@ export function CreateReminderModal({
         phone_number: '',
         date,
         time,
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        timezone: settingsTimezone,
       });
     }
     setErrors({});
     setTouched({});
-  }, [reminder, isOpen, initialDateTime]);
+  }, [reminder, isOpen, initialDateTime, settingsTimezone]);
 
   const validateField = (name: keyof ReminderFormState, value: ReminderFormState[keyof ReminderFormState]): string | undefined => {
     switch (name) {
