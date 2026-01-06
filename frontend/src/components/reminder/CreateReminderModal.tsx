@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Modal, Button, Input, PhoneNumberInput, DatePicker, TimezoneInput } from '@/components/ui';
 import { Reminder } from '@/types';
 import { useSettings } from '@/contexts';
+import { fromZonedTime } from 'date-fns-tz';
 import {
   isValidPhoneNumber,
   isFutureDateTime,
@@ -197,10 +198,17 @@ export function CreateReminderModal({
       return;
     }
 
-    // Combine date and time
+    // Combine date and time in the selected timezone and convert to UTC
     const [hours, minutes] = formData.time.split(':').map(Number);
-    const scheduled_time = new Date(formData.date!);
-    scheduled_time.setHours(hours, minutes, 0, 0);
+    const year = formData.date!.getFullYear();
+    const month = formData.date!.getMonth();
+    const day = formData.date!.getDate();
+
+    // Create date in the selected timezone
+    const dateInTimezone = new Date(year, month, day, hours, minutes, 0, 0);
+
+    // Convert to UTC
+    const scheduled_time = fromZonedTime(dateInTimezone, formData.timezone);
 
     const reminderData: Partial<Reminder> = {
       ...(reminder?.id && { id: reminder.id }),
