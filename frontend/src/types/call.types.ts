@@ -1,4 +1,4 @@
-import { Reminder } from './reminder';
+import { Reminder } from './reminder.types';
 
 export interface Call {
   id: string;
