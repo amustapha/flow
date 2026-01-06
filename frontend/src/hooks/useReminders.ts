@@ -9,10 +9,12 @@ export interface UseRemindersOptions {
   date?: Date;
   page?: number;
   pageSize?: number;
+  status?: string;
+  searchQuery?: string;
 }
 
 export function useReminders(options: UseRemindersOptions = {}) {
-  const { date, page, pageSize } = options;
+  const { date, page, pageSize, status, searchQuery } = options;
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -31,6 +33,7 @@ export function useReminders(options: UseRemindersOptions = {}) {
           page?: number;
           page_size?: number;
           timezone?: string;
+          status?: string;
         } = {};
 
         if (date) {
@@ -49,9 +52,13 @@ export function useReminders(options: UseRemindersOptions = {}) {
           params.timezone = timezone;
         }
 
+        if (status) {
+          params.status = status;
+        }
+
         const response = await reminderService.list(params);
 
-        const remindersList: Reminder[] = response.items.map((item) => ({
+        let remindersList: Reminder[] = response.items.map((item) => ({
           ...item,
           // Ensure datetime strings are parsed as UTC by appending 'Z' if missing
           scheduled_time: new Date(
@@ -75,8 +82,18 @@ export function useReminders(options: UseRemindersOptions = {}) {
             : undefined,
         }));
 
+        // Client-side filtering by search query
+        if (searchQuery && searchQuery.trim() !== '') {
+          const query = searchQuery.toLowerCase().trim();
+          remindersList = remindersList.filter(
+            (reminder) =>
+              reminder.title.toLowerCase().includes(query) ||
+              reminder.message.toLowerCase().includes(query)
+          );
+        }
+
         setReminders(remindersList);
-        setTotal(response.total);
+        setTotal(searchQuery ? remindersList.length : response.total);
       } catch (err) {
         setError(err instanceof Error ? err : new Error('Failed to fetch reminders'));
         setReminders([]);
@@ -87,7 +104,7 @@ export function useReminders(options: UseRemindersOptions = {}) {
     };
 
     fetchReminders();
-  }, [date, page, pageSize, timezone, refetchTrigger]);
+  }, [date, page, pageSize, timezone, status, searchQuery, refetchTrigger]);
 
   const refetch = () => setRefetchTrigger((prev) => prev + 1);
 
