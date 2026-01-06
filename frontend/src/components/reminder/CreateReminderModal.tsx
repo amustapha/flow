@@ -62,14 +62,14 @@ export function CreateReminderModal({
   // Initialize form data when reminder prop changes
   useEffect(() => {
     if (reminder) {
-      const reminderDate = new Date(reminder.scheduledTime);
+      const reminderDate = new Date(reminder.scheduled_time);
       const hours = reminderDate.getHours().toString().padStart(2, '0');
       const minutes = reminderDate.getMinutes().toString().padStart(2, '0');
 
       setFormData({
         title: reminder.title,
         message: reminder.message,
-        phoneNumber: reminder.phoneNumber,
+        phoneNumber: reminder.phone_number,
         date: reminderDate,
         time: `${hours}:${minutes}`,
         timezone: reminder.timezone,
@@ -209,15 +209,15 @@ export function CreateReminderModal({
 
     // Combine date and time
     const [hours, minutes] = formData.time.split(':').map(Number);
-    const scheduledTime = new Date(formData.date!);
-    scheduledTime.setHours(hours, minutes, 0, 0);
+    const scheduled_time = new Date(formData.date!);
+    scheduled_time.setHours(hours, minutes, 0, 0);
 
     const reminderData: Partial<Reminder> = {
       ...(reminder?.id && { id: reminder.id }),
       title: formData.title.trim(),
       message: formData.message.trim(),
-      phoneNumber: formData.phoneNumber,
-      scheduledTime,
+      phone_number: formData.phoneNumber,
+      scheduled_time,
       timezone: formData.timezone,
     };
 
