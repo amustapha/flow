@@ -99,7 +99,7 @@ export function CreateReminderModal({
     setTouched({});
   }, [reminder, isOpen, initialDateTime]);
 
-  const validateField = (name: keyof FormData, value: any): string | undefined => {
+  const validateField = (name: keyof FormData, value: FormData[keyof FormData]): string | undefined => {
     switch (name) {
       case 'title':
         if (!isNonEmptyString(value)) {
@@ -166,7 +166,7 @@ export function CreateReminderModal({
     return !Object.values(newErrors).some((error) => error !== undefined);
   };
 
-  const handleFieldChange = (name: keyof FormData, value: any) => {
+  const handleFieldChange = (name: keyof FormData, value: FormData[keyof FormData]) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
 
     // Validate field if it has been touched

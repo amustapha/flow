@@ -14,7 +14,7 @@ import {
   ConfirmDeleteModal,
 } from '@/components/reminder';
 import { useReminders } from '@/hooks';
-import { Reminder } from '@/types';
+import { Reminder, ReminderCreate, ReminderUpdate } from '@/types';
 import { MONTH_NAMES } from '@/lib/constants';
 import { reminderService } from '@/services';
 
@@ -87,14 +87,14 @@ export default function Home() {
     setReminderToDelete(null);
   };
 
-  const handleSaveReminder = async (reminderData: Partial<Reminder>) => {
+  const handleSaveReminder = async (reminderData: ReminderCreate | ReminderUpdate) => {
     try {
       if (reminderToEdit) {
         // Update existing reminder
-        await reminderService.update(reminderToEdit.id, reminderData);
+        await reminderService.update(reminderToEdit.id, reminderData as ReminderUpdate);
       } else {
         // Create new reminder
-        await reminderService.create(reminderData as any);
+        await reminderService.create(reminderData as ReminderCreate);
       }
       setIsCreateModalOpen(false);
       setReminderToEdit(null);
