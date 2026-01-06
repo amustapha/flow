@@ -25,7 +25,7 @@ export function AppLayout({ children, sidebar }: AppLayoutProps) {
         )}
       >
         {/* Sidebar content */}
-        <div className="h-full overflow-y-auto px-4 py-6 lg:py-8">
+        <div className="h-full overflow-y-auto px-4 py-6 lg:py-4">
           {sidebar}
         </div>
       </aside>
