@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Reminder, ReminderStatus } from '@/types';
 import { reminderService } from '@/services';
 import { useSettings } from '@/contexts';
@@ -90,7 +90,7 @@ export function useReminders(options: UseRemindersOptions = {}) {
     fetchReminders();
   }, [date, page, pageSize, timezone, status, searchQuery, refetchTrigger]);
 
-  const refetch = () => setRefetchTrigger((prev) => prev + 1);
+  const refetch = useCallback(() => setRefetchTrigger((prev) => prev + 1), []);
 
   return { reminders, total, isLoading, error, refetch };
 }
