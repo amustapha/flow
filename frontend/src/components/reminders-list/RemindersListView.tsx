@@ -104,6 +104,9 @@ export function RemindersListView({
                       <p className="mt-1 text-xs text-gray-500">
                         {format(timeInZone, 'MMM d, yyyy h:mm a')}
                       </p>
+                      <p className="mt-1 text-xs text-gray-500">
+                        {reminder.phone_number}
+                      </p>
                       <div className="mt-1">
                         <TimeRemaining targetDate={reminder.scheduled_time} className="text-xs" />
                       </div>
