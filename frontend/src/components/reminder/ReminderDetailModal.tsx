@@ -1,6 +1,6 @@
 'use client';
 
-import { Modal, Button, TimeRemaining } from '@/components/ui';
+import { Modal, Button, TimeRemaining, StatusBadge } from '@/components/ui';
 import { Reminder } from '@/types';
 import { useSettings } from '@/contexts';
 
@@ -55,18 +55,6 @@ export function ReminderDetailModal({
     }
   };
 
-  const getStatusBadgeColor = (status?: string) => {
-    switch (status) {
-      case 'Completed':
-        return 'bg-green-100 text-green-800';
-      case 'Failed':
-        return 'bg-red-100 text-red-800';
-      case 'Scheduled':
-      default:
-        return 'bg-blue-100 text-blue-800';
-    }
-  };
-
   const handleEdit = () => {
     onEdit?.(reminder);
   };
@@ -81,13 +69,7 @@ export function ReminderDetailModal({
         {/* Status Badge */}
         {reminder.status && (
           <div className="flex items-center">
-            <span
-              className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusBadgeColor(
-                reminder.status
-              )}`}
-            >
-              {reminder.status}
-            </span>
+            <StatusBadge status={reminder.status} size="sm" />
           </div>
         )}
 

@@ -7,7 +7,7 @@ import { toZonedTime } from 'date-fns-tz';
 import { ChevronLeftIcon, ChevronRightIcon, BellIcon, MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useReminders } from '@/hooks';
 import { useSettings } from '@/contexts';
-import { Button, Badge, TimeRemaining, Input } from '@/components/ui';
+import { Button, TimeRemaining, Input, StatusBadge } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { Reminder } from '@/types';
 import { StatusFilter } from './StatusFilter';
@@ -97,18 +97,6 @@ export function RemindersListView({
     setSearchInput('');
     setSearchQuery('');
     setCurrentPage(1);
-  };
-
-  const getStatusColor = (status?: string) => {
-    switch (status) {
-      case 'Completed':
-        return 'bg-green-100 text-green-800';
-      case 'Failed':
-        return 'bg-red-100 text-red-800';
-      case 'Scheduled':
-      default:
-        return 'bg-blue-100 text-blue-800';
-    }
   };
 
   if (error) {
@@ -212,9 +200,7 @@ export function RemindersListView({
                       </div>
                     </div>
                     {reminder.status && (
-                      <Badge className={cn('text-xs', getStatusColor(reminder.status))}>
-                        {reminder.status}
-                      </Badge>
+                      <StatusBadge status={reminder.status} size="sm" />
                     )}
                   </div>
                 </div>
