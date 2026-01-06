@@ -15,6 +15,7 @@ import {
 } from '@/components/reminder';
 import { useReminders } from '@/hooks';
 import { Reminder } from '@/types';
+import { MONTH_NAMES } from '@/lib/constants';
 
 export default function Home() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -26,11 +27,6 @@ export default function Home() {
   const [reminderToEdit, setReminderToEdit] = useState<Reminder | null>(null);
   const [reminderToDelete, setReminderToDelete] = useState<Reminder | null>(null);
   const [initialDateTime, setInitialDateTime] = useState<Date | undefined>(undefined);
-
-  const monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
-  ];
 
   const handlePreviousMonth = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1));
@@ -119,7 +115,7 @@ export default function Home() {
     <AppLayout sidebar={<Sidebar onCreateReminder={handleCreateReminder} />}>
       <div className="flex h-full flex-col">
         <CalendarHeader
-          month={monthNames[currentDate.getMonth()]}
+          month={MONTH_NAMES[currentDate.getMonth()]}
           year={currentDate.getFullYear()}
           onPreviousMonth={handlePreviousMonth}
           onNextMonth={handleNextMonth}
