@@ -39,6 +39,7 @@ def create_reminder(
 def list_reminders(
     status_filter: Optional[str] = Query(None, alias="status"),
     date_filter: Optional[date] = Query(None, alias="date"),
+    timezone_filter: Optional[str] = Query(None, alias="timezone"),
     page: int = Query(1, ge=1),
     page_size: int = Query(50, ge=1, le=100),
     service: ReminderService = Depends(get_reminder_service),
@@ -49,12 +50,17 @@ def list_reminders(
     Query parameters:
     - status: Filter by reminder status (pending, in_progress, completed, failed, cancelled)
     - date: Filter by scheduled date (YYYY-MM-DD)
+    - timezone: Timezone for date filtering (e.g., "America/Los_Angeles")
     - page: Page number (default: 1)
     - page_size: Number of items per page (default: 50, max: 100)
     """
     skip = (page - 1) * page_size
     reminders, total = service.get_reminders(
-        status=status_filter, filter_date=date_filter, skip=skip, limit=page_size
+        status=status_filter,
+        filter_date=date_filter,
+        timezone=timezone_filter,
+        skip=skip,
+        limit=page_size,
     )
 
     return ReminderListResponse(
