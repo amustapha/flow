@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { AppLayout, Sidebar, ErrorBoundary } from '@/components';
 import {
   CalendarHeader,
@@ -19,7 +20,21 @@ import { ReminderCreate, ReminderUpdate } from '@/types';
 import { MONTH_NAMES } from '@/lib/constants';
 
 export default function Home() {
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // Initialize date from URL param or default to today
+  const [currentDate, setCurrentDate] = useState(() => {
+    const dateParam = searchParams.get('date');
+    if (dateParam) {
+      const parsedDate = new Date(dateParam);
+      if (!isNaN(parsedDate.getTime())) {
+        return parsedDate;
+      }
+    }
+    return new Date();
+  });
   const [sidebarRefetchTrigger, setSidebarRefetchTrigger] = useState(0);
 
   const { reminders, isLoading, error, refetch } = useReminders({ date: currentDate });
@@ -59,6 +74,17 @@ export default function Home() {
   const handleToday = () => {
     setCurrentDate(new Date());
   };
+
+  // Sync date to URL
+  useEffect(() => {
+    const dateString = currentDate.toISOString().split('T')[0]; // YYYY-MM-DD format
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (params.get('date') !== dateString) {
+      params.set('date', dateString);
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    }
+  }, [currentDate, pathname, router, searchParams]);
 
   // Modal action handlers
   const handleSaveReminder = async (reminderData: ReminderCreate | ReminderUpdate) => {
