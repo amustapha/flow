@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { AppLayout, Sidebar, ErrorBoundary } from '@/components';
 import {
@@ -19,7 +19,7 @@ import { useReminders, useModalManager, useReminderOperations } from '@/hooks';
 import { ReminderCreate, ReminderUpdate } from '@/types';
 import { MONTH_NAMES } from '@/lib/constants';
 
-export default function Home() {
+function HomeContent() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -190,5 +190,13 @@ export default function Home() {
         />
       </AppLayout>
     </ErrorBoundary>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<div className="flex h-screen items-center justify-center">Loading...</div>}>
+      <HomeContent />
+    </Suspense>
   );
 }
