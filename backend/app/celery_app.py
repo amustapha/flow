@@ -31,6 +31,10 @@ celery_app.conf.update(
             "task": "app.tasks.process_scheduled_reminders",
             "schedule": 60.0,
         },
+        "cleanup-in-progress-calls": {
+            "task": "app.tasks.cleanup_in_progress_calls",
+            "schedule": 120.0,
+        },
     },
 )
 

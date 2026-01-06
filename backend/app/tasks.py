@@ -14,6 +14,7 @@ from app.clients import VapiClient
 from app.core.config import settings
 from app.core.database import SessionLocal
 from app.services import CallService, ReminderService
+from app.models.call import Call
 from app.models.reminder import Reminder
 from app.schemas.call import CallCreate, CallUpdate
 from app.schemas.base import ReminderStatus, CallStatus
@@ -230,6 +231,74 @@ def process_scheduled_reminders() -> dict:
 
     except Exception as e:
         logger.error(f"Error in process_scheduled_reminders: {str(e)}", exc_info=True)
+        raise
+
+    finally:
+        db.close()
+
+
+@celery_app.task(name="app.tasks.cleanup_in_progress_calls")
+def cleanup_in_progress_calls() -> dict:
+    """Check and update status of in-progress calls from Vapi."""
+    db = SessionLocal()
+
+    try:
+        # Find all calls with in_progress status
+        in_progress_calls = (
+            db.query(Call)
+            .filter(Call.status == CallStatus.IN_PROGRESS)
+            .filter(Call.vapi_call_id.isnot(None))
+            .all()
+        )
+
+        logger.info(f"Found {len(in_progress_calls)} in-progress calls to check")
+
+        updated_count = 0
+        failed_count = 0
+
+        vapi_client = VapiClient()
+
+        for call in in_progress_calls:
+            try:
+                # Get call status from Vapi
+                loop = asyncio.get_event_loop()
+                if loop.is_closed():
+                    loop = asyncio.new_event_loop()
+                    asyncio.set_event_loop(loop)
+
+                vapi_call = loop.run_until_complete(
+                    vapi_client.get_call(call.vapi_call_id)
+                )
+
+                vapi_status = vapi_call.get("status")
+
+                # Map Vapi status to our CallStatus
+                if vapi_status == "ended":
+                    ended_reason = vapi_call.get("endedReason", "")
+                    # Check if call was successful or failed
+                    if ended_reason in ["assistant-ended-call", "customer-ended-call"]:
+                        new_status = CallStatus.COMPLETED
+                    else:
+                        new_status = CallStatus.FAILED
+
+                    call.status = new_status
+                    db.commit()
+                    updated_count += 1
+                    logger.info(f"Updated call {call.id} to {new_status} (reason: {ended_reason})")
+
+            except Exception as e:
+                failed_count += 1
+                logger.error(f"Error checking call {call.id}: {str(e)}", exc_info=True)
+
+        return {
+            "status": "success",
+            "checked": len(in_progress_calls),
+            "updated": updated_count,
+            "failed": failed_count,
+        }
+
+    except Exception as e:
+        logger.error(f"Error in cleanup_in_progress_calls: {str(e)}", exc_info=True)
         raise
 
     finally:
