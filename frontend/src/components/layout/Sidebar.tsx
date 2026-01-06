@@ -1,5 +1,6 @@
 'use client';
 
+import { BellIcon } from '@heroicons/react/24/outline';
 import { Calendar, Button } from '@/components/ui';
 
 export interface SidebarProps {
@@ -28,7 +29,8 @@ export function Sidebar({ onCreateReminder }: SidebarProps) {
           onClick={onCreateReminder}
           className="w-full"
         >
-          + Create Reminder
+          <BellIcon className="h-5 w-5 mr-2" />
+          Create Reminder
         </Button>
       </div>
     </div>
