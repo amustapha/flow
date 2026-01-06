@@ -7,8 +7,10 @@ services:
     container_name: flow-backend-prod
     ports:
       - "4322:8000"
+    volumes:
+      - sqlite_data:/app/data
     environment:
-      - DATABASE_URL=sqlite:///./flow.db
+      - DATABASE_URL=sqlite:////app/data/flow.db
       - PYTHONUNBUFFERED=1
       - ENV=production
       - REDIS_HOST=redis
@@ -53,8 +55,10 @@ services:
       target: prod
     container_name: flow-celery-worker-prod
     command: celery -A app.celery_app worker --loglevel=info
+    volumes:
+      - sqlite_data:/app/data
     environment:
-      - DATABASE_URL=sqlite:///./flow.db
+      - DATABASE_URL=sqlite:////app/data/flow.db
       - PYTHONUNBUFFERED=1
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -80,8 +84,10 @@ services:
       target: prod
     container_name: flow-celery-beat-prod
     command: celery -A app.celery_app beat --loglevel=info
+    volumes:
+      - sqlite_data:/app/data
     environment:
-      - DATABASE_URL=sqlite:///./flow.db
+      - DATABASE_URL=sqlite:////app/data/flow.db
       - PYTHONUNBUFFERED=1
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -116,5 +122,5 @@ services:
     restart: unless-stopped
 
 volumes:
-  backend_data:
+  sqlite_data:
   redis_data:
