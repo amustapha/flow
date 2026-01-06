@@ -121,12 +121,11 @@ export function RemindersListView({
                         {reminder.title}
                       </p>
                       <p className="mt-1 text-xs text-gray-500">
-                        {format(timeInZone, 'MMM d, yyyy h:mm a')}
-                      </p>
-                      <p className="mt-1 text-xs text-gray-500">
                         {reminder.phone_number}
                       </p>
-                      <div className="mt-1">
+                      <div className="mt-1 flex items-center gap-2 text-xs text-gray-500">
+                        <span>{format(timeInZone, 'MMM d, yyyy h:mm a')}</span>
+                        <span className="text-gray-400">•</span>
                         <TimeRemaining targetDate={reminder.scheduled_time} className="text-xs" />
                       </div>
                     </div>
