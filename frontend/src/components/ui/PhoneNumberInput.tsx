@@ -3,26 +3,7 @@
 import { forwardRef, useState, useEffect } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/16/solid';
 import { cn } from '@/lib/utils';
-
-export interface Country {
-  code: string;
-  dialCode: string;
-  name: string;
-  format?: string;
-}
-
-const COUNTRIES: Country[] = [
-  { code: 'US', dialCode: '+1', name: 'United States', format: '(###) ###-####' },
-  { code: 'CA', dialCode: '+1', name: 'Canada', format: '(###) ###-####' },
-  { code: 'GB', dialCode: '+44', name: 'United Kingdom', format: '#### ### ####' },
-  { code: 'AU', dialCode: '+61', name: 'Australia', format: '#### ### ###' },
-  { code: 'DE', dialCode: '+49', name: 'Germany', format: '### ########' },
-  { code: 'FR', dialCode: '+33', name: 'France', format: '# ## ## ## ##' },
-  { code: 'IN', dialCode: '+91', name: 'India', format: '##### #####' },
-  { code: 'JP', dialCode: '+81', name: 'Japan', format: '##-####-####' },
-  { code: 'BR', dialCode: '+55', name: 'Brazil', format: '(##) #####-####' },
-  { code: 'MX', dialCode: '+52', name: 'Mexico', format: '### ### ####' },
-];
+import { COUNTRIES, Country } from '@/lib/constants';
 
 export interface PhoneNumberInputProps {
   value?: string;
@@ -244,4 +225,5 @@ const PhoneNumberInput = forwardRef<HTMLInputElement, PhoneNumberInputProps>(
 
 PhoneNumberInput.displayName = 'PhoneNumberInput';
 
-export { PhoneNumberInput, COUNTRIES };
+export { PhoneNumberInput };
+export { COUNTRIES, type Country } from '@/lib/constants';
