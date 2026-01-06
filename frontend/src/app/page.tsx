@@ -12,7 +12,7 @@ import { useReminders } from '@/hooks';
 
 export default function Home() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const { reminders, isLoading } = useReminders(currentDate);
+  const { reminders, isLoading, error } = useReminders(currentDate);
 
   const monthNames = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -63,7 +63,15 @@ export default function Home() {
         </div>
 
         <DayViewGrid date={currentDate}>
-          {!isLoading && reminders.map((reminder) => (
+          {error && (
+            <div className="col-span-full flex items-center justify-center p-8">
+              <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+                <p className="font-medium">Failed to load reminders</p>
+                <p className="mt-1 text-red-600">{error.message}</p>
+              </div>
+            </div>
+          )}
+          {!isLoading && !error && reminders.map((reminder) => (
             <ReminderCard
               key={reminder.id}
               reminder={reminder}
