@@ -19,7 +19,6 @@ from app.schemas.call import (
     CallBase,
     CallCreate,
     CallUpdate,
-    CallInDB,
     CallResponse,
     CallWithReminder,
 )
@@ -42,7 +41,6 @@ __all__ = [
     "CallBase",
     "CallCreate",
     "CallUpdate",
-    "CallInDB",
     "CallResponse",
     "CallWithReminder",
 ]
