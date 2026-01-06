@@ -10,6 +10,7 @@ import { useSettings } from '@/contexts';
 import { Button, Badge, TimeRemaining, Input } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { Reminder } from '@/types';
+import { StatusFilter } from './StatusFilter';
 
 export interface RemindersListViewProps {
   onReminderClick?: (reminder: Reminder) => void;
@@ -30,12 +31,14 @@ export function RemindersListView({
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
   const [searchInput, setSearchInput] = useState(searchParams.get('search') || '');
-  const [statusFilter, setStatusFilter] = useState<string>(searchParams.get('status') || '');
+
+  // Read status directly from URL
+  const statusFilter = searchParams.get('status') || undefined;
 
   const { reminders, total, isLoading, error } = useReminders({
     page: currentPage,
     pageSize,
-    status: statusFilter || undefined,
+    status: statusFilter,
     searchQuery: searchQuery || undefined,
   });
   const { timezone } = useSettings();
@@ -50,7 +53,7 @@ export function RemindersListView({
     return () => clearTimeout(timeoutId);
   }, [searchInput]);
 
-  // Update URL when search query or status filter changes
+  // Update URL when search query changes
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
 
@@ -60,14 +63,8 @@ export function RemindersListView({
       params.delete('search');
     }
 
-    if (statusFilter && statusFilter.trim() !== '') {
-      params.set('status', statusFilter);
-    } else {
-      params.delete('status');
-    }
-
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-  }, [searchQuery, statusFilter, pathname, router, searchParams]);
+  }, [searchQuery, pathname, router, searchParams]);
 
   const totalPages = Math.ceil(total / pageSize);
 
@@ -85,11 +82,6 @@ export function RemindersListView({
 
   const handleSearchChange = (value: string) => {
     setSearchInput(value);
-  };
-
-  const handleStatusFilterChange = (value: string) => {
-    setStatusFilter(value);
-    setCurrentPage(1); // Reset to first page when filtering
   };
 
   const handleClearSearch = () => {
@@ -148,53 +140,7 @@ export function RemindersListView({
       </div>
 
       {/* Status Filter */}
-      <div className="flex items-center gap-2 flex-wrap">
-        <span className="text-xs text-gray-500">Status:</span>
-        <button
-          onClick={() => handleStatusFilterChange('')}
-          className={cn(
-            'rounded-full px-3 py-1 text-xs font-medium transition-colors',
-            statusFilter === ''
-              ? 'bg-purple-600 text-white'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-          )}
-        >
-          All
-        </button>
-        <button
-          onClick={() => handleStatusFilterChange('Scheduled')}
-          className={cn(
-            'rounded-full px-3 py-1 text-xs font-medium transition-colors',
-            statusFilter === 'Scheduled'
-              ? 'bg-purple-600 text-white'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-          )}
-        >
-          Scheduled
-        </button>
-        <button
-          onClick={() => handleStatusFilterChange('Completed')}
-          className={cn(
-            'rounded-full px-3 py-1 text-xs font-medium transition-colors',
-            statusFilter === 'Completed'
-              ? 'bg-purple-600 text-white'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-          )}
-        >
-          Completed
-        </button>
-        <button
-          onClick={() => handleStatusFilterChange('Failed')}
-          className={cn(
-            'rounded-full px-3 py-1 text-xs font-medium transition-colors',
-            statusFilter === 'Failed'
-              ? 'bg-purple-600 text-white'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-          )}
-        >
-          Failed
-        </button>
-      </div>
+      <StatusFilter />
 
       {isLoading ? (
         <div className="space-y-2">
