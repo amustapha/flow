@@ -16,8 +16,14 @@ services:
       - PYTHONUNBUFFERED=1
       - WATCHFILES_FORCE_POLLING=false
       - ENV=development
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
     env_file:
       - ./backend/.env
+    depends_on:
+      - redis
     stdin_open: true
     tty: true
     healthcheck:
@@ -25,6 +31,42 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+
+  redis:
+    image: redis:7-alpine
+    container_name: flow-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  celery_worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: dev
+    container_name: flow-celery-worker
+    command: celery -A app.celery_app worker --loglevel=info
+    volumes:
+      - ./backend:/app
+      - /app/__pycache__
+    environment:
+      - DATABASE_URL=sqlite:///./flow.db
+      - PYTHONUNBUFFERED=1
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - redis
+      - backend
 
   frontend:
     build:
@@ -48,3 +90,4 @@ services:
 
 volumes:
   backend_data:
+  redis_data:
