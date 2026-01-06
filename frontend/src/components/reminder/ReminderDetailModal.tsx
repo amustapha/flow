@@ -122,7 +122,7 @@ export function ReminderDetailModal({
             Edit
           </Button>
           <Button variant="secondary" onClick={handleDelete} className="flex-1">
-            Delete
+            Cancel Reminder
           </Button>
         </div>
       </div>
