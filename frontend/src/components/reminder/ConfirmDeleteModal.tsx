@@ -54,11 +54,11 @@ export function ConfirmDeleteModal({
             Go Back
           </Button>
           <Button
-            variant="primary"
+            variant="danger"
             onClick={handleConfirm}
             isLoading={isDeleting}
             disabled={isDeleting}
-            className="flex-1 bg-red-600 hover:bg-red-700 focus-visible:ring-red-600"
+            className="flex-1"
           >
             {isDeleting ? 'Cancelling...' : 'Cancel Reminder'}
           </Button>
