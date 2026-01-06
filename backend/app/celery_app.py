@@ -2,6 +2,7 @@
 
 import logging
 from celery import Celery
+from celery.signals import worker_process_init
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
@@ -12,6 +13,14 @@ celery_app = Celery(
     backend=settings.CELERY_RESULT_BACKEND,
     include=["app.tasks"],
 )
+
+
+@worker_process_init.connect
+def init_worker(**kwargs):
+    """Initialize database tables when worker starts."""
+    from app.core.database import create_tables
+    create_tables()
+    logger.info("Database tables initialized for worker")
 
 celery_app.conf.update(
     task_serializer="json",
