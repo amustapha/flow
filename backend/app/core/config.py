@@ -1,3 +1,4 @@
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -6,8 +7,15 @@ class Settings(BaseSettings):
     API_VERSION: str = "0.1.0"
     DATABASE_URL: str = "sqlite:///./flow.db"
 
-    # CORS Configuration
+    # CORS Configuration - comma-separated list of origins
     CORS_ORIGINS: list[str] = ["http://localhost:3000"]
+
+    @field_validator("CORS_ORIGINS", mode="before")
+    @classmethod
+    def parse_cors_origins(cls, v):
+        if isinstance(v, str):
+            return [origin.strip() for origin in v.split(",") if origin.strip()]
+        return v
 
     # Vapi Configuration
     VAPI_API_KEY: str = ""

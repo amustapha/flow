@@ -15,6 +15,8 @@ services:
       - REDIS_PORT=6379
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      # CORS Configuration - comma-separated origins (e.g., https://reminder.amustapha.com)
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3000}
       # VAPI Configuration - set in Dokploy UI
       - VAPI_API_KEY=${VAPI_API_KEY}
       - VAPI_PHONE_NUMBER_ID=${VAPI_PHONE_NUMBER_ID}
