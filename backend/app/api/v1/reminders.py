@@ -6,6 +6,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from app.api.dependencies import get_reminder_service
 from app.services.reminder_service import ReminderService
+from app.schemas.base import ReminderStatus
 from app.schemas.reminder import (
     ReminderCreate,
     ReminderUpdate,
@@ -37,7 +38,7 @@ def create_reminder(
     summary="List all reminders with optional filtering",
 )
 def list_reminders(
-    status_filter: Optional[str] = Query(None, alias="status"),
+    status_filter: Optional[ReminderStatus] = Query(None, alias="status"),
     date_filter: Optional[date] = Query(None, alias="date"),
     timezone_filter: Optional[str] = Query(None, alias="timezone"),
     page: int = Query(1, ge=1),
@@ -56,7 +57,7 @@ def list_reminders(
     """
     skip = (page - 1) * page_size
     reminders, total = service.get_reminders(
-        status=status_filter,
+        status=status_filter.value if status_filter else None,
         filter_date=date_filter,
         timezone=timezone_filter,
         skip=skip,

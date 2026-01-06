@@ -5,6 +5,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from app.api.dependencies import get_call_service
 from app.services.call_service import CallService
+from app.schemas.base import CallStatus
 from app.schemas.call import (
     CallCreate,
     CallUpdate,
@@ -42,7 +43,7 @@ def create_call(
 )
 def list_calls(
     reminder_id: Optional[UUID] = Query(None),
-    status_filter: Optional[str] = Query(None, alias="status"),
+    status_filter: Optional[CallStatus] = Query(None, alias="status"),
     service: CallService = Depends(get_call_service),
 ):
     """
@@ -52,7 +53,10 @@ def list_calls(
     - reminder_id: Filter by reminder ID
     - status: Filter by call status (Scheduled, Completed, Failed)
     """
-    calls = service.get_calls(reminder_id=reminder_id, status=status_filter)
+    calls = service.get_calls(
+        reminder_id=reminder_id,
+        status=status_filter.value if status_filter else None,
+    )
     return calls
 
 
