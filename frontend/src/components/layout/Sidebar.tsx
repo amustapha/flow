@@ -23,7 +23,10 @@ export function Sidebar({ onCreateReminder, onOpenSettings, onReminderClick }: S
 
       {/* Reminders List */}
       <div className="mb-6 flex-1 overflow-y-auto">
-        <RemindersListView onReminderClick={onReminderClick} />
+        <RemindersListView
+          onReminderClick={onReminderClick}
+          onCreateReminder={onCreateReminder}
+        />
       </div>
 
       {/* Action Buttons - at bottom */}

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, ChevronRightIcon, BellIcon } from '@heroicons/react/24/outline';
 import { useReminders } from '@/hooks';
 import { useSettings } from '@/contexts';
 import { Button, Badge, TimeRemaining } from '@/components/ui';
@@ -12,11 +12,13 @@ import { Reminder } from '@/types';
 
 export interface RemindersListViewProps {
   onReminderClick?: (reminder: Reminder) => void;
+  onCreateReminder?: () => void;
   pageSize?: number;
 }
 
 export function RemindersListView({
   onReminderClick,
+  onCreateReminder,
   pageSize = 5,
 }: RemindersListViewProps) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -77,8 +79,25 @@ export function RemindersListView({
           ))}
         </div>
       ) : reminders.length === 0 ? (
-        <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 text-center">
-          <p className="text-sm text-gray-500">No reminders found</p>
+        <div className="rounded-lg border border-gray-200 bg-gray-50 p-8 text-center">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-purple-100">
+            <BellIcon className="h-8 w-8 text-purple-600" />
+          </div>
+          <h4 className="mb-2 text-sm font-semibold text-gray-900">No reminders yet</h4>
+          <p className="mb-4 text-xs text-gray-500">
+            Get started by creating your first voice reminder
+          </p>
+          {onCreateReminder && (
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={onCreateReminder}
+              className="mx-auto"
+            >
+              <BellIcon className="mr-2 h-4 w-4" />
+              Create Reminder
+            </Button>
+          )}
         </div>
       ) : (
         <>
