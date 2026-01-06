@@ -139,7 +139,7 @@ export default function Home() {
   };
 
   return (
-    <AppLayout sidebar={<Sidebar onCreateReminder={handleCreateReminder} onOpenSettings={handleOpenSettings} />}>
+    <AppLayout sidebar={<Sidebar onCreateReminder={handleCreateReminder} onOpenSettings={handleOpenSettings} onReminderClick={handleReminderClick} />}>
       <div className="flex h-full flex-col">
         <CalendarHeader
           month={MONTH_NAMES[currentDate.getMonth()]}
