@@ -1,7 +1,8 @@
 'use client';
 
-import { forwardRef, useState, useEffect } from 'react';
-import { ChevronDownIcon } from '@heroicons/react/16/solid';
+import { forwardRef, useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { Combobox, ComboboxInput, ComboboxButton, ComboboxOptions, ComboboxOption } from '@headlessui/react';
+import { ChevronDownIcon, CheckIcon } from '@heroicons/react/16/solid';
 import { cn } from '@/lib/utils';
 import { COUNTRIES, Country } from '@/lib/constants';
 
@@ -100,6 +101,33 @@ const PhoneNumberInput = forwardRef<HTMLInputElement, PhoneNumberInputProps>(
       COUNTRIES.find((c) => c.code === defaultCountry) || COUNTRIES[0]
     );
     const [displayValue, setDisplayValue] = useState('');
+    const [countryQuery, setCountryQuery] = useState('');
+    const phoneInputRef = useRef<HTMLInputElement>(null);
+
+    // Merge forwarded ref with internal ref
+    const setRefs = useCallback(
+      (node: HTMLInputElement | null) => {
+        phoneInputRef.current = node;
+        if (typeof ref === 'function') {
+          ref(node);
+        } else if (ref) {
+          ref.current = node;
+        }
+      },
+      [ref]
+    );
+
+    // Filter countries based on search query
+    const filteredCountries = useMemo(() => {
+      if (!countryQuery) return COUNTRIES;
+      const query = countryQuery.toLowerCase();
+      return COUNTRIES.filter(
+        (country) =>
+          country.name.toLowerCase().includes(query) ||
+          country.code.toLowerCase().includes(query) ||
+          country.dialCode.includes(query)
+      );
+    }, [countryQuery]);
 
     const inputId = id || label?.toLowerCase().replace(/\s+/g, '-') || 'phone-number';
 
@@ -114,10 +142,10 @@ const PhoneNumberInput = forwardRef<HTMLInputElement, PhoneNumberInputProps>(
       }
     }, [value, selectedCountry]);
 
-    const handleCountryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-      const country = COUNTRIES.find((c) => c.code === event.target.value);
+    const handleCountryChange = (country: Country | null) => {
       if (country) {
         setSelectedCountry(country);
+        setCountryQuery('');
 
         // If there's a current value, update it with the new country code
         if (displayValue) {
@@ -125,6 +153,9 @@ const PhoneNumberInput = forwardRef<HTMLInputElement, PhoneNumberInputProps>(
           const e164Value = formatToE164(digits, country.dialCode);
           onChange?.(e164Value);
         }
+
+        // Focus the phone input after selecting a country
+        phoneInputRef.current?.focus();
       }
     };
 
@@ -160,34 +191,57 @@ const PhoneNumberInput = forwardRef<HTMLInputElement, PhoneNumberInputProps>(
             disabled && 'opacity-50 cursor-not-allowed bg-gray-50'
           )}
         >
-          <div className="grid shrink-0 grid-cols-1 focus-within:relative">
-            <select
-              id={`${inputId}-country`}
-              name="country"
-              value={selectedCountry.code}
-              onChange={handleCountryChange}
-              disabled={disabled}
-              aria-label="Country code"
-              className={cn(
-                'col-start-1 row-start-1 w-full appearance-none rounded-l-md bg-transparent',
-                'py-2 pr-7 pl-3 text-sm text-gray-700',
-                'focus:outline-none',
-                disabled && 'cursor-not-allowed'
-              )}
-            >
-              {COUNTRIES.map((country) => (
-                <option key={country.code} value={country.code}>
-                  {country.code} {country.dialCode}
-                </option>
-              ))}
-            </select>
-            <ChevronDownIcon
-              aria-hidden="true"
-              className="pointer-events-none col-start-1 row-start-1 mr-2 size-4 self-center justify-self-end text-gray-500"
-            />
-          </div>
+          <Combobox
+            value={selectedCountry}
+            onChange={handleCountryChange}
+            disabled={disabled}
+          >
+            <div className="relative shrink-0">
+              <ComboboxInput
+                id={`${inputId}-country`}
+                aria-label="Country code"
+                displayValue={(country: Country) => `${country.code} ${country.dialCode}`}
+                onChange={(e) => setCountryQuery(e.target.value)}
+                onFocus={(e) => e.target.select()}
+                className={cn(
+                  'w-28 rounded-l-md bg-transparent border-r border-gray-300',
+                  'py-2 pr-7 pl-3 text-sm text-gray-700',
+                  'focus:outline-none',
+                  disabled && 'cursor-not-allowed'
+                )}
+              />
+              <ComboboxButton className="absolute inset-y-0 right-0 flex items-center pr-2">
+                <ChevronDownIcon
+                  aria-hidden="true"
+                  className="size-4 text-gray-500"
+                />
+              </ComboboxButton>
+              <ComboboxOptions
+                className="absolute z-50 mt-1 max-h-60 w-72 overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black/5 focus:outline-none"
+              >
+                {filteredCountries.length === 0 ? (
+                  <div className="px-3 py-2 text-gray-500">No countries found</div>
+                ) : (
+                  filteredCountries.map((country) => (
+                    <ComboboxOption
+                      key={country.code}
+                      value={country}
+                      className="group relative cursor-pointer select-none py-2 pl-10 pr-4 text-gray-900 data-focus:bg-purple-100 data-selected:font-medium"
+                    >
+                      <span className="block truncate">
+                        {country.name} ({country.code}) {country.dialCode}
+                      </span>
+                      <span className="absolute inset-y-0 left-0 hidden items-center pl-3 text-purple-600 group-data-selected:flex">
+                        <CheckIcon className="size-4" aria-hidden="true" />
+                      </span>
+                    </ComboboxOption>
+                  ))
+                )}
+              </ComboboxOptions>
+            </div>
+          </Combobox>
           <input
-            ref={ref}
+            ref={setRefs}
             id={inputId}
             name="phone-number"
             type="tel"
