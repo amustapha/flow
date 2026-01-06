@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Reminder } from '@/types';
+import { Reminder, ReminderStatus } from '@/types';
 import { reminderService } from '@/services';
 import { useSettings } from '@/contexts';
 
@@ -9,7 +9,7 @@ export interface UseRemindersOptions {
   date?: Date;
   page?: number;
   pageSize?: number;
-  status?: string;
+  status?: ReminderStatus;
   searchQuery?: string;
 }
 
@@ -33,7 +33,7 @@ export function useReminders(options: UseRemindersOptions = {}) {
           page?: number;
           page_size?: number;
           timezone?: string;
-          status?: string;
+          status?: ReminderStatus;
         } = {};
 
         if (date) {

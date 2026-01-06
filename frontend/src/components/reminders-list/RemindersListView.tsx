@@ -9,8 +9,14 @@ import { useReminders } from '@/hooks';
 import { useSettings } from '@/contexts';
 import { Button, TimeRemaining, Input, StatusBadge } from '@/components/ui';
 import { cn } from '@/lib/utils';
-import { Reminder } from '@/types';
+import { Reminder, ReminderStatus } from '@/types';
 import { StatusFilter } from './StatusFilter';
+
+const VALID_STATUSES: ReminderStatus[] = ['Scheduled', 'Completed', 'Failed'];
+
+function isValidReminderStatus(status: string | null): status is ReminderStatus {
+  return status !== null && VALID_STATUSES.includes(status as ReminderStatus);
+}
 
 export interface RemindersListViewProps {
   onReminderClick?: (reminder: Reminder) => void;
@@ -34,8 +40,9 @@ export function RemindersListView({
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
   const [searchInput, setSearchInput] = useState(searchParams.get('search') || '');
 
-  // Read status directly from URL
-  const statusFilter = searchParams.get('status') || undefined;
+  // Read status directly from URL and validate
+  const statusParam = searchParams.get('status');
+  const statusFilter = isValidReminderStatus(statusParam) ? statusParam : undefined;
 
   const { reminders, total, isLoading, error, refetch } = useReminders({
     page: currentPage,
