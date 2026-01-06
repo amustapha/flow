@@ -11,35 +11,26 @@ class CallBase(BaseSchema):
     """Base call schema with common fields."""
 
     reminder_id: UUID = Field(..., examples=["550e8400-e29b-41d4-a716-446655440000"])
-    vapi_call_id: Optional[str] = Field(None, examples=["vapi_call_123abc"])
-    status: CallStatus = Field(..., examples=["Scheduled"])
 
 
-class CallCreate(BaseSchema):
+class CallCreate(CallBase):
     """Schema for creating a call."""
 
-    reminder_id: UUID = Field(..., examples=["550e8400-e29b-41d4-a716-446655440000"])
-    vapi_call_id: Optional[str] = Field(None, examples=["vapi_call_123abc"])
-    status: CallStatus = Field(CallStatus.SCHEDULED, examples=["Scheduled"])
+    pass
 
 
 class CallUpdate(BaseSchema):
-    """Schema for updating a call (all fields optional)."""
+    """Schema for updating a call."""
 
     vapi_call_id: Optional[str] = Field(None, examples=["vapi_call_456def"])
-    status: Optional[CallStatus] = Field(None, examples=["Completed"])
+    status: Optional[CallStatus] = Field(None, examples=["completed"])
 
 
-class CallInDB(CallBase, IDMixin, TimestampMixin):
-    """Schema for call as stored in database."""
-
-    pass
-
-
-class CallResponse(CallInDB):
+class CallResponse(CallBase, IDMixin, TimestampMixin):
     """Schema for call API responses."""
 
-    pass
+    vapi_call_id: Optional[str] = Field(None, examples=["vapi_call_123abc"])
+    status: CallStatus = Field(..., examples=["created"])
 
 
 class CallWithReminder(CallResponse):

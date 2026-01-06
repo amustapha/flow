@@ -3,6 +3,7 @@
 import logging
 from uuid import UUID
 from typing import Optional
+from datetime import datetime, timezone
 import asyncio
 
 from celery import Task
@@ -12,6 +13,8 @@ from app.celery_app import celery_app
 from app.clients import VapiClient
 from app.core.database import SessionLocal
 from app.services import CallService, ReminderService
+from app.models.reminder import Reminder
+from app.schemas.call import CallCreate
 from app.core.exceptions import NotFoundError, ValidationError
 
 logger = logging.getLogger(__name__)
@@ -89,7 +92,7 @@ def initiate_vapi_call(self, call_id: str) -> dict:
 
         call = call_service.update(
             call_uuid,
-            {"vapi_call_id": vapi_call_id},
+            {"vapi_call_id": vapi_call_id, "status": "in_progress"},
         )
 
         logger.info(
@@ -105,22 +108,19 @@ def initiate_vapi_call(self, call_id: str) -> dict:
 
     except NotFoundError as e:
         logger.error(f"Resource not found: {str(e)}")
-        # Update call status to Failed
-        call_service.update_call_status(call_uuid, "Failed")
+        call_service.update_call_status(call_uuid, "failed")
         raise
 
     except ValidationError as e:
         logger.error(f"Validation error: {str(e)}")
-        # Update call status to Failed
-        call_service.update_call_status(call_uuid, "Failed")
+        call_service.update_call_status(call_uuid, "failed")
         raise
 
     except Exception as e:
         logger.error(f"Error initiating VAPI call: {str(e)}", exc_info=True)
 
-        # Update call status to Failed
         try:
-            call_service.update_call_status(call_uuid, "Failed")
+            call_service.update_call_status(call_uuid, "failed")
         except Exception as update_error:
             logger.error(f"Failed to update call status: {str(update_error)}")
 
@@ -144,13 +144,14 @@ def update_call_status(call_id: str, status: str) -> dict:
 
         logger.info(f"Updated call {call_id} status to {status}")
 
-        if status in ["Completed", "Failed"]:
+        if status in ["completed", "failed"]:
             reminder_service = ReminderService(db)
             reminder = reminder_service.get(call.reminder_id)
 
             if reminder:
-                reminder_service.update(call.reminder_id, {"status": status})
-                logger.info(f"Updated reminder {call.reminder_id} status to {status}")
+                reminder_status = "Completed" if status == "completed" else "Failed"
+                reminder_service.update(call.reminder_id, {"status": reminder_status})
+                logger.info(f"Updated reminder {call.reminder_id} status to {reminder_status}")
 
         return {
             "status": "success",
@@ -160,6 +161,67 @@ def update_call_status(call_id: str, status: str) -> dict:
 
     except Exception as e:
         logger.error(f"Error updating call status: {str(e)}", exc_info=True)
+        raise
+
+    finally:
+        db.close()
+
+
+@celery_app.task(name="app.tasks.process_scheduled_reminders")
+def process_scheduled_reminders() -> dict:
+    """Process reminders that are due for calling."""
+    db = SessionLocal()
+
+    try:
+        now = datetime.now(timezone.utc)
+
+        due_reminders = (
+            db.query(Reminder)
+            .filter(Reminder.scheduled_time <= now)
+            .filter(Reminder.status == "Scheduled")
+            .all()
+        )
+
+        logger.info(f"Found {len(due_reminders)} due reminders to process")
+
+        processed_count = 0
+        failed_count = 0
+
+        for reminder in due_reminders:
+            try:
+                call_service = CallService(db)
+
+                call_data = CallCreate(reminder_id=reminder.id)
+                call = call_service.create(call_data)
+
+                if call:
+                    processed_count += 1
+                    logger.info(f"Created call for reminder {reminder.id}")
+                else:
+                    failed_count += 1
+                    reminder_service = ReminderService(db)
+                    reminder_service.update(reminder.id, {"status": "Failed"})
+                    logger.error(f"Failed to create call for reminder {reminder.id}")
+
+            except Exception as e:
+                failed_count += 1
+                logger.error(f"Error processing reminder {reminder.id}: {str(e)}", exc_info=True)
+
+                try:
+                    reminder_service = ReminderService(db)
+                    reminder_service.update(reminder.id, {"status": "Failed"})
+                except Exception as update_error:
+                    logger.error(f"Failed to update reminder status: {str(update_error)}")
+
+        return {
+            "status": "success",
+            "processed": processed_count,
+            "failed": failed_count,
+            "total": len(due_reminders),
+        }
+
+    except Exception as e:
+        logger.error(f"Error in process_scheduled_reminders: {str(e)}", exc_info=True)
         raise
 
     finally:

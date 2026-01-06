@@ -40,6 +40,7 @@ class ReminderStatus(str, Enum):
 class CallStatus(str, Enum):
     """Call status enum."""
 
-    SCHEDULED = "Scheduled"
-    COMPLETED = "Completed"
-    FAILED = "Failed"
+    CREATED = "created"
+    IN_PROGRESS = "in_progress"
+    COMPLETED = "completed"
+    FAILED = "failed"
