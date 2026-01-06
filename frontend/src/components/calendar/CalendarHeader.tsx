@@ -1,22 +1,23 @@
 'use client';
 
-import { ChevronLeftIcon, ChevronRightIcon, CalendarIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/components/ui';
+import { CalendarDatePicker } from './CalendarDatePicker';
 
 export interface CalendarHeaderProps {
   month: string;
   year: number;
+  currentDate: Date;
   onPreviousMonth: () => void;
   onNextMonth: () => void;
+  onDateSelect: (date: Date) => void;
 }
 
-export function CalendarHeader({ month, year, onPreviousMonth, onNextMonth }: CalendarHeaderProps) {
+export function CalendarHeader({ month, year, currentDate, onPreviousMonth, onNextMonth, onDateSelect }: CalendarHeaderProps) {
   return (
     <div className="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
       <div className="flex items-center gap-4">
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-100">
-          <CalendarIcon className="h-6 w-6 text-purple-600" />
-        </div>
+        <CalendarDatePicker currentDate={currentDate} onDateSelect={onDateSelect} />
         <h2 className="text-2xl font-semibold text-gray-900">
           {month} {year}
         </h2>

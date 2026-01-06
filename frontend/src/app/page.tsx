@@ -127,8 +127,10 @@ export default function Home() {
           <CalendarHeader
             month={MONTH_NAMES[currentDate.getMonth()]}
             year={currentDate.getFullYear()}
+            currentDate={currentDate}
             onPreviousMonth={handlePreviousMonth}
             onNextMonth={handleNextMonth}
+            onDateSelect={setCurrentDate}
           />
 
           <div className="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
