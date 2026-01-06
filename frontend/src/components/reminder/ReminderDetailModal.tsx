@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { Modal, Button, Countdown, StatusBadge } from '@/components/ui';
-import { Reminder } from '@/types';
-import { useSettings } from '@/contexts';
+import { Modal, Button, Countdown, StatusBadge } from "@/components/ui";
+import { Reminder } from "@/types";
+import { useSettings } from "@/contexts";
 
 export interface ReminderDetailModalProps {
   isOpen: boolean;
@@ -27,16 +27,16 @@ export function ReminderDetailModal({
 
   const formatDateTime = (date: Date, timezone: string) => {
     try {
-      const dateStr = date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
+      const dateStr = date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
         timeZone: timezone,
       });
 
-      const timeStr = date.toLocaleTimeString('en-US', {
-        hour: 'numeric',
-        minute: '2-digit',
+      const timeStr = date.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
         hour12: true,
         timeZone: timezone,
       });
@@ -44,12 +44,12 @@ export function ReminderDetailModal({
       return `${dateStr} at ${timeStr}`;
     } catch {
       // Fallback if timezone is invalid
-      return date.toLocaleString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit',
+      return date.toLocaleString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
         hour12: true,
       });
     }
@@ -73,14 +73,6 @@ export function ReminderDetailModal({
           </div>
         )}
 
-        {/* Time Remaining */}
-        <div className="rounded-lg bg-purple-50 border border-purple-200 p-3">
-          <div className="flex items-center gap-2">
-            <h4 className="text-sm font-medium text-gray-700">Time Remaining:</h4>
-            <Countdown targetDate={reminder.scheduled_time} variant="primary" size="md" />
-          </div>
-        </div>
-
         {/* Message */}
         <div>
           <h4 className="text-sm font-medium text-gray-700 mb-1">Message</h4>
@@ -89,16 +81,28 @@ export function ReminderDetailModal({
 
         {/* Phone Number */}
         <div>
-          <h4 className="text-sm font-medium text-gray-700 mb-1">Phone Number</h4>
+          <h4 className="text-sm font-medium text-gray-700 mb-1">
+            Phone Number
+          </h4>
           <p className="text-sm text-gray-900">{reminder.phone_number}</p>
         </div>
 
         {/* Date and Time */}
         <div>
-          <h4 className="text-sm font-medium text-gray-700 mb-1">Scheduled For</h4>
-          <p className="text-sm text-gray-900">
-            {formatDateTime(reminder.scheduled_time, timezone)}
-          </p>
+          <h4 className="text-sm font-medium text-gray-700 mb-1">
+            Scheduled For
+          </h4>
+
+          <div className="flex items-center gap-2">
+            <p className="text-sm text-gray-900">
+              {formatDateTime(reminder.scheduled_time, timezone)}
+            </p>
+            <Countdown
+              targetDate={reminder.scheduled_time}
+              variant="primary"
+              size="md"
+            />
+          </div>
         </div>
 
         {/* Timezone */}
